@@ -1,0 +1,1203 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>剣舞会エッジ LP ワイヤーフレーム v3</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;600;700&display=swap');
+
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    font-family: 'Noto Sans JP', sans-serif;
+    background: #f5f5f5;
+    color: #333;
+  }
+
+  .frame-wrapper {
+    display: flex;
+    gap: 24px;
+    padding: 24px;
+    overflow-x: auto;
+    scroll-behavior: smooth;
+    min-height: 100vh;
+    align-items: flex-start;
+  }
+  .frame-label {
+    position: sticky;
+    top: 0;
+    background: #222;
+    color: #fff;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 6px 12px;
+    border-radius: 0 0 8px 8px;
+    z-index: 10;
+    text-align: center;
+    letter-spacing: .05em;
+  }
+
+  .phone {
+    min-width: 375px;
+    max-width: 375px;
+    background: #fff;
+    border-radius: 24px;
+    border: 3px solid #222;
+    overflow: hidden;
+    box-shadow: 0 8px 32px rgba(0,0,0,.12);
+    flex-shrink: 0;
+    position: relative;
+  }
+  .phone-screen {
+    height: 720px;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    position: relative;
+  }
+  .phone-screen::-webkit-scrollbar { width: 4px; }
+  .phone-screen::-webkit-scrollbar-thumb { background: #ccc; border-radius: 2px; }
+
+  section {
+    border-bottom: 1px dashed #ddd;
+    padding: 20px 16px;
+    position: relative;
+  }
+  section::before {
+    content: attr(data-no);
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    background: #eee;
+    color: #999;
+    font-size: 10px;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-weight: 700;
+  }
+  .section-tag {
+    display: inline-block;
+    font-size: 10px;
+    font-weight: 700;
+    color: #fff;
+    padding: 2px 8px;
+    border-radius: 3px;
+    margin-bottom: 8px;
+    letter-spacing: .05em;
+  }
+  .tag-fv { background: #b71c1c; }
+  .tag-service { background: #1565c0; }
+  .tag-booking { background: #e65100; }
+  .tag-thanks { background: #2e7d32; }
+
+  h2 { font-size: 15px; margin-bottom: 6px; }
+  h3 { font-size: 13px; margin-bottom: 4px; color: #555; }
+  p, li { font-size: 12px; color: #666; line-height: 1.6; }
+  ul { padding-left: 16px; margin-top: 4px; }
+
+  .img-placeholder {
+    background: #f0f0f0;
+    border: 2px dashed #ccc;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #aaa;
+    font-size: 12px;
+    font-weight: 700;
+  }
+  .hero-img { height: 200px; margin-bottom: 16px; }
+
+  .btn {
+    display: block;
+    width: 100%;
+    padding: 14px;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    text-align: center;
+    margin-top: 12px;
+    transition: opacity .2s;
+  }
+  .btn:hover { opacity: .85; }
+  .btn-primary { background: #b71c1c; color: #fff; }
+  .btn-outline { background: #fff; color: #b71c1c; border: 2px solid #b71c1c; }
+
+  .badge {
+    display: inline-block;
+    background: #f5f5f5;
+    border: 1px solid #ddd;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 11px;
+    color: #555;
+    margin: 2px;
+  }
+
+  .sticky-header {
+    position: sticky;
+    top: 0;
+    z-index: 5;
+    background: #fff;
+    border-bottom: 1px solid #eee;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 16px;
+  }
+  .logo-text { font-size: 14px; font-weight: 700; }
+  .header-btn {
+    font-size: 11px;
+    padding: 6px 12px;
+    border-radius: 4px;
+    background: #b71c1c;
+    color: #fff;
+    border: none;
+    font-weight: 700;
+    cursor: pointer;
+  }
+
+  /* --- Service cards (tappable) --- */
+  .service-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 8px;
+    margin: 10px 0;
+  }
+  .service-card {
+    border: 2px solid #eee;
+    border-radius: 10px;
+    padding: 12px 6px 8px;
+    text-align: center;
+    cursor: pointer;
+    transition: all .15s;
+    position: relative;
+  }
+  .service-card:hover { border-color: #b71c1c; background: #fff8f8; }
+  .service-card .icon { font-size: 28px; margin-bottom: 4px; }
+  .service-card .name { font-size: 10px; font-weight: 600; color: #333; line-height: 1.3; }
+  .service-card .tap-hint {
+    font-size: 9px;
+    color: #b71c1c;
+    margin-top: 4px;
+    opacity: .7;
+  }
+
+  /* --- Detail modal overlay --- */
+  .detail-overlay {
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,.5);
+    z-index: 20;
+    display: none;
+    align-items: flex-end;
+    justify-content: center;
+  }
+  .detail-overlay.active { display: flex; }
+  .detail-sheet {
+    background: #fff;
+    border-radius: 16px 16px 0 0;
+    width: 100%;
+    max-height: 85%;
+    overflow-y: auto;
+    padding: 20px 16px 24px;
+    animation: slideUp .25s ease-out;
+  }
+  @keyframes slideUp {
+    from { transform: translateY(100%); }
+    to { transform: translateY(0); }
+  }
+  .detail-sheet .close-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: #f0f0f0;
+    border: none;
+    font-size: 16px;
+    cursor: pointer;
+    float: right;
+  }
+  .detail-sheet .detail-img {
+    height: 160px;
+    margin: 8px 0 12px;
+  }
+  .detail-sheet h2 { font-size: 18px; margin-bottom: 8px; }
+  .detail-sheet .detail-desc { font-size: 13px; color: #555; line-height: 1.7; }
+  .detail-sheet .detail-tags { margin-top: 10px; }
+
+  /* --- Calendar --- */
+  .calendar {
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    overflow: hidden;
+    margin: 8px 0;
+  }
+  .cal-header {
+    background: #f9f9f9;
+    padding: 8px;
+    text-align: center;
+    font-size: 13px;
+    font-weight: 700;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .cal-header span { font-size: 11px; color: #999; cursor: pointer; }
+  .cal-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 1px;
+    padding: 4px;
+  }
+  .cal-day {
+    text-align: center;
+    padding: 10px 4px;
+    font-size: 12px;
+    border-radius: 6px;
+    cursor: pointer;
+  }
+  .cal-day.header { font-weight: 700; color: #999; font-size: 10px; cursor: default; }
+  .cal-day.empty { cursor: default; }
+  .cal-day.available:hover { background: #fce4ec; }
+  .cal-day.selected { background: #b71c1c; color: #fff; font-weight: 700; }
+  .cal-day.disabled { color: #ddd; text-decoration: line-through; cursor: default; }
+
+  /* Time slots */
+  .time-slots {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+    margin: 8px 0;
+  }
+  .time-slot {
+    padding: 14px 4px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    text-align: center;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all .15s;
+  }
+  .time-slot:hover { border-color: #b71c1c; }
+  .time-slot.selected { background: #b71c1c; color: #fff; border-color: #b71c1c; }
+  .time-slot.disabled { background: #f5f5f5; color: #ccc; cursor: default; border-color: #eee; }
+  .time-slot .status { font-size: 10px; display: block; margin-top: 2px; font-weight: 400; }
+
+  /* Booking service select */
+  .service-card-book {
+    border: 2px solid #eee;
+    border-radius: 8px;
+    padding: 10px 6px;
+    text-align: center;
+    cursor: pointer;
+    transition: all .15s;
+    position: relative;
+  }
+  .service-card-book:hover { border-color: #b71c1c; }
+  .service-card-book.selected { border-color: #b71c1c; background: #fff5f5; }
+  .service-card-book .icon { font-size: 22px; }
+  .service-card-book .name { font-size: 9px; font-weight: 600; color: #333; line-height: 1.3; margin-top: 2px; }
+  .service-card-book .check {
+    position: absolute;
+    top: 3px;
+    right: 3px;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: #b71c1c;
+    color: #fff;
+    font-size: 9px;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+  }
+  .service-card-book.selected .check { display: flex; }
+  .pick-counter {
+    text-align: center;
+    font-size: 12px;
+    color: #999;
+    margin: 4px 0;
+  }
+  .pick-counter strong { color: #b71c1c; }
+
+  /* Form */
+  .form-group { margin-bottom: 12px; }
+  .form-group label {
+    display: block;
+    font-size: 11px;
+    font-weight: 700;
+    color: #555;
+    margin-bottom: 4px;
+  }
+  .form-group input, .form-group textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 13px;
+    font-family: inherit;
+    background: #fafafa;
+  }
+  .form-group textarea { height: 60px; resize: none; }
+
+  /* Confirm */
+  .confirm-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 0;
+    border-bottom: 1px solid #f0f0f0;
+    font-size: 12px;
+  }
+  .confirm-row .label { color: #999; }
+  .confirm-row .value { font-weight: 700; text-align: right; }
+  .edit-link { font-size: 10px; color: #1565c0; cursor: pointer; margin-left: 6px; }
+
+  .checkbox-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    font-size: 11px;
+    margin: 10px 0;
+    color: #555;
+  }
+  .checkbox-row input { margin-top: 2px; flex-shrink: 0; }
+
+  .check-circle {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    background: #e8f5e9;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 12px;
+    font-size: 32px;
+  }
+
+  .flow-step {
+    display: flex;
+    gap: 12px;
+    padding: 10px 0;
+    border-bottom: 1px solid #f5f5f5;
+  }
+  .flow-num {
+    min-width: 36px;
+    height: 28px;
+    border-radius: 14px;
+    background: #b71c1c;
+    color: #fff;
+    font-size: 10px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+  .flow-step h3 { font-size: 13px; color: #333; font-weight: 700; }
+  .flow-step p { font-size: 11px; }
+
+  .feature-cards { display: flex; flex-direction: column; gap: 8px; }
+  .feature-card {
+    display: flex;
+    gap: 12px;
+    padding: 12px;
+    border: 1px solid #eee;
+    border-radius: 8px;
+    align-items: center;
+  }
+  .feature-icon { font-size: 28px; flex-shrink: 0; }
+  .feature-card h3 { font-size: 12px; color: #333; }
+  .feature-card p { font-size: 11px; }
+
+  .faq-item {
+    border-bottom: 1px solid #f0f0f0;
+    padding: 10px 0;
+  }
+  .faq-q { font-size: 12px; font-weight: 700; }
+  .faq-a { font-size: 11px; color: #666; margin-top: 4px; }
+
+  .payment-note {
+    background: #f5f5f5;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 12px;
+    margin: 8px 0;
+  }
+  .payment-note h3 { font-size: 12px; color: #333; margin-bottom: 6px; }
+  .payment-brands { display: flex; flex-wrap: wrap; gap: 6px; }
+  .payment-brand {
+    padding: 4px 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 10px;
+    font-weight: 700;
+    color: #666;
+    background: #fff;
+  }
+
+  .progress-bar {
+    display: flex;
+    gap: 4px;
+    padding: 12px 16px;
+    background: #f9f9f9;
+  }
+  .progress-bar div { flex: 1; height: 4px; border-radius: 2px; }
+  .p-done { background: #b71c1c; }
+  .p-todo { background: #ddd; }
+
+  .pending-notice {
+    background: #fff8e1;
+    border: 1px solid #ffe082;
+    border-radius: 8px;
+    padding: 12px;
+    font-size: 12px;
+    color: #6d4c00;
+    margin: 8px 0;
+  }
+
+  .timeline-item {
+    display: flex;
+    gap: 12px;
+    padding: 8px 0;
+    position: relative;
+  }
+  .timeline-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: #ddd;
+    flex-shrink: 0;
+    margin-top: 3px;
+  }
+  .timeline-dot.active { background: #2e7d32; }
+  .timeline-dot.pending { background: #ff9800; }
+  .timeline-item:not(:last-child)::before {
+    content: '';
+    position: absolute;
+    left: 5px;
+    top: 23px;
+    bottom: -2px;
+    width: 2px;
+    background: #eee;
+  }
+
+  .footer { background: #fafafa; padding: 16px; text-align: center; font-size: 10px; color: #aaa; }
+  .screen-nav {
+    position: fixed;
+    bottom: 16px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #222;
+    color: #fff;
+    padding: 8px 20px;
+    border-radius: 24px;
+    font-size: 12px;
+    z-index: 100;
+    box-shadow: 0 4px 16px rgba(0,0,0,.3);
+  }
+
+  .arrow-connector {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-width: 48px;
+    color: #bbb;
+    flex-shrink: 0;
+    padding-top: 300px;
+  }
+  .arrow-connector .arrow { font-size: 32px; margin: 4px 0; }
+</style>
+</head>
+<body>
+
+<div class="screen-nav">← スクロールで画面遷移を確認 →</div>
+
+<div class="frame-wrapper">
+
+<!-- ========== SCREEN 1: LP ========== -->
+<div>
+  <div class="frame-label">SCREEN 1 ／ LP メイン（スクロール）</div>
+  <div class="phone">
+    <div class="phone-screen" id="screen1">
+
+      <div class="sticky-header">
+        <div class="logo-text">SHIDENRYU</div>
+        <button class="header-btn">予約する</button>
+      </div>
+
+      <!-- Hero -->
+      <section data-no="Hero">
+        <span class="section-tag tag-fv">ファーストビュー</span>
+        <div class="img-placeholder hero-img">📷 侍パフォーマンス 写真 / 動画</div>
+        <h2 style="font-size:22px; line-height:1.3; margin-bottom:8px;">侍の世界へ、<br>踏み出そう。</h2>
+        <p>ホテルのお部屋で、本格的な日本文化体験。<br>プロのパフォーマーがあなたの元へ。</p>
+        <div style="margin:10px 0;">
+          <span class="badge">90分</span>
+          <span class="badge">¥40,000</span>
+          <span class="badge">初心者歓迎</span>
+          <span class="badge">16:00–24:00</span>
+        </div>
+        <button class="btn btn-primary">体験を予約する ▼</button>
+      </section>
+
+      <!-- About -->
+      <section data-no="概要">
+        <span class="section-tag tag-service">サービス紹介</span>
+        <h2>殺陣（たて）とは</h2>
+        <p style="margin-top:6px;">殺陣とは、日本独自の舞台剣術です。侍の精神・美学・礼節を表現する伝統文化であり、志伝流はその本物の技と迫力をエンターテインメントとして届けています。</p>
+        <p style="margin-top:8px;">ホテルのお部屋にプロのパフォーマーが訪問。外出不要で本格体験ができます。</p>
+      </section>
+
+      <!-- 9 Services (tappable) -->
+      <section data-no="体験一覧">
+        <span class="section-tag tag-service">体験メニュー</span>
+        <h2>9つの体験から3つを選択</h2>
+        <p style="margin-bottom:4px;">タップで詳細を確認 → 予約時に3つ選べます</p>
+
+        <div class="service-grid">
+          <div class="service-card" onclick="showDetail(0)">
+            <div class="icon">⚔️</div>
+            <div class="name">殺陣<br>（剣術）</div>
+            <div class="tap-hint">▶ 詳細</div>
+          </div>
+          <div class="service-card" onclick="showDetail(1)">
+            <div class="icon">🥋</div>
+            <div class="name">侍<br>着付け</div>
+            <div class="tap-hint">▶ 詳細</div>
+          </div>
+          <div class="service-card" onclick="showDetail(2)">
+            <div class="icon">📸</div>
+            <div class="name">記念<br>撮影</div>
+            <div class="tap-hint">▶ 詳細</div>
+          </div>
+          <div class="service-card" onclick="showDetail(3)">
+            <div class="icon">🍵</div>
+            <div class="name">茶道<br>体験</div>
+            <div class="tap-hint">▶ 詳細</div>
+          </div>
+          <div class="service-card" onclick="showDetail(4)">
+            <div class="icon">✍️</div>
+            <div class="name">書道<br>体験</div>
+            <div class="tap-hint">▶ 詳細</div>
+          </div>
+          <div class="service-card" onclick="showDetail(5)">
+            <div class="icon">🪭</div>
+            <div class="name">日本舞踊</div>
+            <div class="tap-hint">▶ 詳細</div>
+          </div>
+          <div class="service-card" onclick="showDetail(6)">
+            <div class="icon">🎯</div>
+            <div class="name">手裏剣<br>投げ</div>
+            <div class="tap-hint">▶ 詳細</div>
+          </div>
+          <div class="service-card" onclick="showDetail(7)">
+            <div class="icon">🧘</div>
+            <div class="name">瞑想<br>体験</div>
+            <div class="tap-hint">▶ 詳細</div>
+          </div>
+          <div class="service-card" onclick="showDetail(8)">
+            <div class="icon">📜</div>
+            <div class="name">折り紙<br>体験</div>
+            <div class="tap-hint">▶ 詳細</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 90min flow -->
+      <section data-no="体験フロー">
+        <span class="section-tag tag-service">90分の流れ</span>
+        <h2>体験の流れ（90分）</h2>
+        <div class="flow-step">
+          <div class="flow-num">0:00</div>
+          <div><h3>ご挨拶 & 準備</h3><p>講師がお部屋に到着。衣装に着替え、安全説明・礼儀作法をご紹介。</p></div>
+        </div>
+        <div class="flow-step">
+          <div class="flow-num">0:15</div>
+          <div><h3>体験① （約20分）</h3><p>選んだ1つ目のアクティビティ。講師が丁寧に指導します。</p></div>
+        </div>
+        <div class="flow-step">
+          <div class="flow-num">0:35</div>
+          <div><h3>体験② （約20分）</h3><p>2つ目のアクティビティ。基本から実践まで。</p></div>
+        </div>
+        <div class="flow-step">
+          <div class="flow-num">0:55</div>
+          <div><h3>体験③ （約20分）</h3><p>3つ目のアクティビティ。これまでの学びを活かして。</p></div>
+        </div>
+        <div class="flow-step">
+          <div class="flow-num">1:15</div>
+          <div><h3>記念撮影 & まとめ</h3><p>決めポーズで撮影。修了証書をプレゼント。</p></div>
+        </div>
+        <div class="flow-step" style="border:none;">
+          <div class="flow-num" style="background:#666;">1:30</div>
+          <div><h3>体験終了</h3><p>ありがとうございました！</p></div>
+        </div>
+      </section>
+
+      <!-- Price -->
+      <section data-no="料金">
+        <span class="section-tag tag-service">料金</span>
+        <h2>料金</h2>
+        <div style="font-size:28px; font-weight:700; color:#b71c1c; margin:8px 0;">¥40,000 <span style="font-size:13px; color:#666;">/ 1回（税込）</span></div>
+        <p>1回あたり最大4名まで参加OK。人数にかかわらず固定料金です。</p>
+        <div style="margin-top:10px;">
+          <h3>料金に含まれるもの</h3>
+          <ul>
+            <li>プロ講師による指導</li>
+            <li>全道具・衣装一式</li>
+            <li>お好みの3つの体験</li>
+            <li>記念撮影 & 修了証書</li>
+          </ul>
+        </div>
+        <div class="payment-note" style="margin-top:12px;">
+          <h3>💳 お支払いについて（当日現地払い）</h3>
+          <p style="font-size:11px; margin-bottom:6px;">体験開始時にお部屋でお支払いいただきます。</p>
+          <div class="payment-brands">
+            <span class="payment-brand">現金</span>
+            <span class="payment-brand">VISA</span>
+            <span class="payment-brand">Mastercard</span>
+            <span class="payment-brand">AMEX</span>
+            <span class="payment-brand">JCB</span>
+            <span class="payment-brand">Apple Pay</span>
+            <span class="payment-brand">Google Pay</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- Details -->
+      <section data-no="詳細">
+        <span class="section-tag tag-service">基本情報</span>
+        <div class="feature-cards">
+          <div class="feature-card">
+            <div class="feature-icon">🌙</div>
+            <div><h3>毎日 16:00〜24:00</h3><p>夜の時間帯が人気です</p></div>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon">👥</div>
+            <div><h3>1回あたり 1〜4名</h3><p>所要時間 約90分</p></div>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon">🏨</div>
+            <div><h3>お部屋にお届け</h3><p>外出の必要はありません</p></div>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon">🎒</div>
+            <div><h3>持ち物不要</h3><p>動きやすい服装でお待ちください</p></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- FAQ -->
+      <section data-no="FAQ">
+        <span class="section-tag tag-service">よくある質問</span>
+        <h2>FAQ</h2>
+        <div class="faq-item">
+          <p class="faq-q">Q: 経験がなくても大丈夫？</p>
+          <p class="faq-a">A: はい、完全初心者向けのプログラムです。</p>
+        </div>
+        <div class="faq-item">
+          <p class="faq-q">Q: 安全ですか？</p>
+          <p class="faq-a">A: 模造刀・練習用具を使用。安全第一です。</p>
+        </div>
+        <div class="faq-item">
+          <p class="faq-q">Q: 子どもも参加できる？</p>
+          <p class="faq-a">A: 6歳以上、保護者同伴で参加可能です。</p>
+        </div>
+        <div class="faq-item">
+          <p class="faq-q">Q: 予約はどう確定される？</p>
+          <p class="faq-a">A: リクエスト送信後、運営が空き状況を確認し、24時間以内に確認メールをお送りします。</p>
+        </div>
+        <div class="faq-item">
+          <p class="faq-q">Q: 支払い方法は？</p>
+          <p class="faq-a">A: 当日現地払いです。現金・クレジットカード・Apple Pay・Google Pay対応。</p>
+        </div>
+        <div class="faq-item" style="border:none;">
+          <p class="faq-q">Q: キャンセルは？</p>
+          <p class="faq-a">A: 24時間前まで無料キャンセル可能です。</p>
+        </div>
+      </section>
+
+      <!-- CTA -->
+      <section data-no="CTA" style="text-align:center; background:#fafafa;">
+        <h2>体験を予約する</h2>
+        <p style="margin-top:4px;">日程と体験メニューを選んでリクエストを送信してください。</p>
+        <button class="btn btn-primary">▼ 予約フォームへ</button>
+      </section>
+
+      <div class="footer">
+        運営：Sammy Corporation<br>
+        利用規約 ｜ プライバシーポリシー ｜ 特定商取引法に基づく表記<br>
+        Instagram ｜ YouTube<br>
+        support@example.com
+      </div>
+
+      <!-- Detail Overlay (bottom sheet) -->
+      <div class="detail-overlay" id="detailOverlay" onclick="hideDetail(event)">
+        <div class="detail-sheet" id="detailSheet" onclick="event.stopPropagation()">
+          <button class="close-btn" onclick="hideDetail()">✕</button>
+          <div id="detailContent"></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- Arrow -->
+<div class="arrow-connector">
+  <div class="arrow">→</div>
+  <div style="font-size:10px; text-align:center; writing-mode:horizontal-tb;">予約する<br>タップ</div>
+</div>
+
+<!-- ========== SCREEN 1.5: Detail view example ========== -->
+<div>
+  <div class="frame-label">SCREEN 1.5 ／ 体験詳細（ボトムシート）</div>
+  <div class="phone">
+    <div class="phone-screen" style="background:rgba(0,0,0,.4); display:flex; align-items:flex-end;">
+
+      <div style="background:#fff; border-radius:16px 16px 0 0; width:100%; padding:20px 16px 24px;">
+        <button class="close-btn" style="display:flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:50%;background:#f0f0f0;border:none;font-size:16px;cursor:pointer;float:right;">✕</button>
+        
+        <div style="font-size:36px; margin-bottom:4px;">⚔️</div>
+        <h2 style="font-size:18px; margin-bottom:4px;">殺陣（たて）— 剣術体験</h2>
+        
+        <div class="img-placeholder" style="height:140px; margin:10px 0;">📷 殺陣の実演シーン写真</div>
+        
+        <p style="font-size:13px; color:#555; line-height:1.7; margin-bottom:12px;">
+          日本の時代劇や映画で見られる「殺陣」を実際に体験。プロのアクション指導者から刀の構え方、抜刀・納刀の作法、そして迫力ある立ち回りの型を学びます。最後は講師との演武シーンに挑戦！
+        </p>
+
+        <div style="margin-bottom:12px;">
+          <h3 style="font-size:12px; color:#333; margin-bottom:4px;">体験内容</h3>
+          <ul style="font-size:12px;">
+            <li>刀の持ち方・構え方の基本</li>
+            <li>抜刀・納刀の作法</li>
+            <li>斬りの型（正面斬り・袈裟斬り）</li>
+            <li>講師との立ち回り演武</li>
+          </ul>
+        </div>
+
+        <div style="display:flex; gap:6px; flex-wrap:wrap;">
+          <span class="badge">初心者OK</span>
+          <span class="badge">一番人気</span>
+          <span class="badge">約20分</span>
+        </div>
+
+        <button class="btn btn-primary" style="margin-top:16px;">この体験を含めて予約する ▼</button>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- Arrow -->
+<div class="arrow-connector">
+  <div class="arrow">→</div>
+  <div style="font-size:10px; text-align:center; writing-mode:horizontal-tb;">予約する<br>タップ</div>
+</div>
+
+<!-- ========== SCREEN 2: Booking ========== -->
+<div>
+  <div class="frame-label">SCREEN 2 ／ 予約：日付・時間・体験選択</div>
+  <div class="phone">
+    <div class="phone-screen">
+
+      <div class="sticky-header">
+        <div class="logo-text">SHIDENRYU</div>
+        <button class="header-btn" style="background:#666;">✕ 閉じる</button>
+      </div>
+
+      <div class="progress-bar">
+        <div class="p-done"></div>
+        <div class="p-todo"></div>
+        <div class="p-todo"></div>
+      </div>
+
+      <!-- Calendar -->
+      <section data-no="Step 1">
+        <span class="section-tag tag-booking">日付選択</span>
+        <h2>日程を選んでください</h2>
+        <div class="calendar">
+          <div class="cal-header">
+            <span>◀ 前月</span>
+            <div>2026年 3月</div>
+            <span>翌月 ▶</span>
+          </div>
+          <div class="cal-grid">
+            <div class="cal-day header">日</div>
+            <div class="cal-day header">月</div>
+            <div class="cal-day header">火</div>
+            <div class="cal-day header">水</div>
+            <div class="cal-day header">木</div>
+            <div class="cal-day header">金</div>
+            <div class="cal-day header">土</div>
+            <div class="cal-day empty"></div><div class="cal-day empty"></div><div class="cal-day empty"></div><div class="cal-day empty"></div><div class="cal-day empty"></div><div class="cal-day empty"></div>
+            <div class="cal-day available">1</div>
+            <div class="cal-day available">2</div>
+            <div class="cal-day available">3</div>
+            <div class="cal-day disabled">4</div>
+            <div class="cal-day available">5</div>
+            <div class="cal-day available">6</div>
+            <div class="cal-day selected">7</div>
+            <div class="cal-day available">8</div>
+            <div class="cal-day available">9</div>
+            <div class="cal-day available">10</div>
+            <div class="cal-day disabled">11</div>
+            <div class="cal-day available">12</div>
+            <div class="cal-day available">13</div>
+            <div class="cal-day available">14</div>
+            <div class="cal-day available">15</div>
+          </div>
+        </div>
+        <p style="font-size:10px; color:#999; text-align:center;">グレー＝受付不可 ／ 赤＝選択中</p>
+      </section>
+
+      <!-- Time -->
+      <section data-no="Step 2">
+        <span class="section-tag tag-booking">時間帯選択</span>
+        <h2>時間を選んでください</h2>
+        <p style="font-size:11px; color:#999; margin-bottom:8px;">3月7日（土）の空き状況</p>
+        <div class="time-slots">
+          <div class="time-slot">16:00–17:30<span class="status" style="color:#2e7d32;">◎ 空き</span></div>
+          <div class="time-slot disabled">18:00–19:30<span class="status">✕ 満席</span></div>
+          <div class="time-slot selected">20:00–21:30<span class="status">● 選択中</span></div>
+          <div class="time-slot">22:00–23:30<span class="status" style="color:#e65100;">△ 残1</span></div>
+        </div>
+      </section>
+
+      <!-- Activities -->
+      <section data-no="Step 3">
+        <span class="section-tag tag-booking">体験メニュー選択</span>
+        <h2>3つ選んでください</h2>
+        <div class="service-grid">
+          <div class="service-card-book selected"><div class="check">✓</div><div class="icon">⚔️</div><div class="name">殺陣</div></div>
+          <div class="service-card-book selected"><div class="check">✓</div><div class="icon">🥋</div><div class="name">着付け</div></div>
+          <div class="service-card-book"><div class="check">✓</div><div class="icon">📸</div><div class="name">撮影</div></div>
+          <div class="service-card-book selected"><div class="check">✓</div><div class="icon">🍵</div><div class="name">茶道</div></div>
+          <div class="service-card-book"><div class="check">✓</div><div class="icon">✍️</div><div class="name">書道</div></div>
+          <div class="service-card-book"><div class="check">✓</div><div class="icon">🪭</div><div class="name">舞踊</div></div>
+          <div class="service-card-book"><div class="check">✓</div><div class="icon">🎯</div><div class="name">手裏剣</div></div>
+          <div class="service-card-book"><div class="check">✓</div><div class="icon">🧘</div><div class="name">瞑想</div></div>
+          <div class="service-card-book"><div class="check">✓</div><div class="icon">📜</div><div class="name">折り紙</div></div>
+        </div>
+        <p class="pick-counter"><strong>3</strong> / 3 選択済み</p>
+
+        <div style="text-align:center; padding:12px; background:#fafafa; border-radius:8px; margin-top:8px;">
+          <p style="font-size:12px; color:#666;">料金（固定）</p>
+          <p style="font-size:24px; font-weight:700; color:#b71c1c;">¥40,000</p>
+          <p style="font-size:11px; color:#999;">税込 ・ 当日現地払い</p>
+        </div>
+
+        <button class="btn btn-primary">次へ：お客様情報入力 →</button>
+      </section>
+
+    </div>
+  </div>
+</div>
+
+<!-- Arrow -->
+<div class="arrow-connector">
+  <div class="arrow">→</div>
+  <div style="font-size:10px; text-align:center; writing-mode:horizontal-tb;">次へ<br>タップ</div>
+</div>
+
+<!-- ========== SCREEN 3: Info + Confirm ========== -->
+<div>
+  <div class="frame-label">SCREEN 3 ／ 情報入力 + 確認</div>
+  <div class="phone">
+    <div class="phone-screen">
+
+      <div class="sticky-header">
+        <div class="logo-text">SHIDENRYU</div>
+        <button class="header-btn" style="background:#666;">← 戻る</button>
+      </div>
+
+      <div class="progress-bar">
+        <div class="p-done"></div>
+        <div class="p-done"></div>
+        <div class="p-todo"></div>
+      </div>
+
+      <section data-no="Step 4">
+        <span class="section-tag tag-booking">お客様情報</span>
+        <h2>情報を入力してください</h2>
+
+        <div style="background:#f0f7ff; border-radius:8px; padding:10px; margin-bottom:12px; font-size:11px; color:#1565c0;">
+          📅 3月7日（土） 20:00–21:30 ・ ¥40,000
+        </div>
+
+        <div class="form-group">
+          <label>お名前 *</label>
+          <input type="text" placeholder="John Smith">
+        </div>
+        <div class="form-group">
+          <label>メールアドレス *</label>
+          <input type="email" placeholder="john@example.com">
+        </div>
+        <div class="form-group">
+          <label>参加人数 *</label>
+          <input type="text" placeholder="2">
+        </div>
+        <div class="form-group">
+          <label>部屋番号 *</label>
+          <input type="text" placeholder="1234">
+        </div>
+        <div class="form-group">
+          <label>ご要望（任意）</label>
+          <textarea placeholder="特別なリクエスト等"></textarea>
+        </div>
+      </section>
+
+      <section data-no="Step 5">
+        <span class="section-tag tag-booking">確認</span>
+        <h2>予約リクエストの確認</h2>
+        <div style="margin-top:8px;">
+          <div class="confirm-row">
+            <span class="label">📅 日付</span>
+            <span class="value">2026年3月7日（土）<span class="edit-link">変更</span></span>
+          </div>
+          <div class="confirm-row">
+            <span class="label">🕐 時間</span>
+            <span class="value">20:00–21:30 <span class="edit-link">変更</span></span>
+          </div>
+          <div class="confirm-row">
+            <span class="label">🎯 体験</span>
+            <span class="value" style="font-size:11px;">殺陣 / 着付け / 茶道 <span class="edit-link">変更</span></span>
+          </div>
+          <div class="confirm-row">
+            <span class="label">👤 お名前</span>
+            <span class="value">John Smith</span>
+          </div>
+          <div class="confirm-row">
+            <span class="label">👥 人数</span>
+            <span class="value">2名</span>
+          </div>
+          <div class="confirm-row">
+            <span class="label">🚪 部屋</span>
+            <span class="value">#1234</span>
+          </div>
+          <div class="confirm-row" style="border:none;">
+            <span class="label">💴 料金</span>
+            <span class="value" style="font-size:18px; color:#b71c1c;">¥40,000</span>
+          </div>
+        </div>
+
+        <div class="payment-note">
+          <h3>💳 当日現地払い</h3>
+          <p style="font-size:11px;">現金・クレジットカード・Apple Pay・Google Pay対応</p>
+        </div>
+
+        <div class="pending-notice">
+          ⏳ これは<strong>予約リクエスト</strong>です。運営が対応可否を確認し、<strong>24時間以内</strong>に予約確定 or 代替提案のメールをお送りします。
+        </div>
+
+        <div class="checkbox-row">
+          <input type="checkbox" checked>
+          <span><u>利用規約</u> および <u>プライバシーポリシー</u> に同意する</span>
+        </div>
+
+        <button class="btn btn-primary" style="font-size:16px; padding:16px;">
+          予約リクエストを送信する
+        </button>
+      </section>
+
+    </div>
+  </div>
+</div>
+
+<!-- Arrow -->
+<div class="arrow-connector">
+  <div class="arrow">→</div>
+  <div style="font-size:10px; text-align:center; writing-mode:horizontal-tb;">送信<br>タップ</div>
+</div>
+
+<!-- ========== SCREEN 4: Thanks ========== -->
+<div>
+  <div class="frame-label">SCREEN 4 ／ リクエスト受付完了</div>
+  <div class="phone">
+    <div class="phone-screen">
+
+      <div class="sticky-header">
+        <div class="logo-text">SHIDENRYU</div>
+      </div>
+
+      <div class="progress-bar">
+        <div class="p-done"></div>
+        <div class="p-done"></div>
+        <div class="p-done"></div>
+      </div>
+
+      <section data-no="" style="text-align:center; padding-top:32px;">
+        <span class="section-tag tag-thanks">リクエスト受付</span>
+        <div class="check-circle">📩</div>
+        <h2 style="font-size:18px;">予約リクエストを<br>受け付けました！</h2>
+        <p style="margin-top:8px;"><strong>John</strong> 様、ありがとうございます。</p>
+      </section>
+
+      <section data-no="">
+        <h3>今後の流れ</h3>
+        <div style="margin-top:12px;">
+          <div class="timeline-item">
+            <div class="timeline-dot active"></div>
+            <div><h3 style="font-size:12px;">✅ リクエスト受付</h3><p style="font-size:11px;">たった今</p></div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-dot pending"></div>
+            <div><h3 style="font-size:12px;">⏳ 運営が確認中</h3><p style="font-size:11px;">対応可否を確認しています</p></div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-dot"></div>
+            <div><h3 style="font-size:12px;">📧 確認メール送付</h3><p style="font-size:11px;">24時間以内に john@example.com へ</p></div>
+          </div>
+          <div class="timeline-item" style="padding-bottom:0;">
+            <div class="timeline-dot"></div>
+            <div><h3 style="font-size:12px;">🎉 体験当日</h3><p style="font-size:11px;">3月7日（土）20:00〜</p></div>
+          </div>
+        </div>
+      </section>
+
+      <section data-no="">
+        <h3>リクエスト内容</h3>
+        <div style="margin-top:8px;">
+          <div class="confirm-row"><span class="label">📅 日付</span><span class="value">2026年3月7日（土）</span></div>
+          <div class="confirm-row"><span class="label">🕐 時間</span><span class="value">20:00–21:30</span></div>
+          <div class="confirm-row"><span class="label">🎯 体験</span><span class="value" style="font-size:11px;">殺陣 / 着付け / 茶道</span></div>
+          <div class="confirm-row"><span class="label">👥 人数</span><span class="value">2名</span></div>
+          <div class="confirm-row" style="border:none;"><span class="label">💴 料金</span><span class="value" style="color:#b71c1c;">¥40,000（当日現地払い）</span></div>
+        </div>
+      </section>
+
+      <section data-no="" style="text-align:center;">
+        <div class="pending-notice" style="text-align:left;">
+          📬 <strong>メールをご確認ください</strong><br>
+          24時間以内に、予約確定または代替日時のご提案を <strong>john@example.com</strong> にお送りします。
+        </div>
+        <button class="btn btn-outline">📲 カレンダーに仮登録</button>
+        <p style="margin-top:16px; font-size:11px; color:#999;">
+          ご質問は<br><strong>support@example.com</strong> まで
+        </p>
+      </section>
+
+      <div class="footer">
+        運営：Sammy Corporation<br>
+        利用規約 ｜ プライバシーポリシー<br>
+        Instagram ｜ YouTube
+      </div>
+
+    </div>
+  </div>
+</div>
+
+</div>
+
+<!-- Detail modal JS (SCREEN 1 only) -->
+<script>
+const services = [
+  {
+    icon: '⚔️',
+    name: '殺陣（たて）— 剣術体験',
+    img: '📷 殺陣の実演シーン',
+    desc: '日本の時代劇で見る「殺陣」を実際に体験。プロのアクション指導者から、刀の構え方・抜刀/納刀の作法・迫力ある立ち回りの型を学びます。最後は講師との演武シーンに挑戦！',
+    details: ['刀の持ち方・構え方の基本', '抜刀・納刀の作法', '斬りの型（正面斬り・袈裟斬り）', '講師との立ち回り演武'],
+    tags: ['一番人気', '初心者OK', '約20分']
+  },
+  {
+    icon: '🥋',
+    name: '侍着付け体験',
+    img: '📷 着物・袴の着付けシーン',
+    desc: '本格的な侍の衣装（着物・袴）を身にまとう体験。着付けの手順を学びながら、侍の装いの意味や歴史についても解説します。衣装を着たまま他の体験に参加できます。',
+    details: ['着物・袴の着付け手順', '帯の結び方', '侍の装いの歴史解説', '着付け後の立ち居振る舞い'],
+    tags: ['写真映え◎', '初心者OK', '約20分']
+  },
+  {
+    icon: '📸',
+    name: '記念撮影セッション',
+    img: '📷 プロカメラマン撮影イメージ',
+    desc: '侍の衣装や刀を手にした本格的な記念写真を撮影。ポージングの指導付きで、映画のワンシーンのようなカッコいい写真が残せます。撮影データはその場でお渡し。',
+    details: ['ポージング指導', '複数パターンの撮影', '小道具を使った演出', 'データ即日お渡し'],
+    tags: ['SNS映え', '全員参加', '約20分']
+  },
+  {
+    icon: '🍵',
+    name: '茶道体験',
+    img: '📷 抹茶を点てるシーン',
+    desc: 'お部屋の中で本格的な茶道を体験。抹茶の点て方、お茶碗の持ち方、礼儀作法を学びながら、自分で点てたお抹茶と和菓子を楽しめます。',
+    details: ['茶道の歴史と心得', '抹茶の点て方（薄茶）', 'お茶碗の扱い方・礼儀', '和菓子とともにいただく'],
+    tags: ['和の心', '初心者OK', '約20分']
+  },
+  {
+    icon: '✍️',
+    name: '書道体験',
+    img: '📷 毛筆で書くシーン',
+    desc: '毛筆と墨を使って日本の書道を体験。好きな漢字や自分の名前を筆で書き、作品としてお持ち帰りいただけます。筆の持ち方から丁寧に指導。',
+    details: ['筆の持ち方・姿勢の基本', '基本的な筆運び練習', '好きな漢字 or 名前を揮毫', '作品をお土産にお持ち帰り'],
+    tags: ['お土産付き', '初心者OK', '約20分']
+  },
+  {
+    icon: '🪭',
+    name: '日本舞踊体験',
+    img: '📷 扇子を使った舞のシーン',
+    desc: '日本の伝統的な舞踊の基本を体験。扇子の使い方、美しい所作、基本的な振り付けを学び、短い演目を一緒に踊ります。',
+    details: ['扇子の開き方・持ち方', '基本的な足運び・所作', '簡単な振り付けの練習', '講師と一緒にミニ演目'],
+    tags: ['優雅', '女性に人気', '約20分']
+  },
+  {
+    icon: '🎯',
+    name: '手裏剣投げ体験',
+    img: '📷 的に向かって手裏剣を投げるシーン',
+    desc: '忍者が使った手裏剣の投げ方を体験。安全なゴム製手裏剣と専用的を使い、正しいフォームを学んでスコアを競います。',
+    details: ['手裏剣の歴史と種類', '正しい握り方・投げ方', '的当てチャレンジ', 'スコア対決（グループ時）'],
+    tags: ['盛り上がる！', '子供OK', '約20分']
+  },
+  {
+    icon: '🧘',
+    name: '瞑想体験',
+    img: '📷 静かに瞑想するシーン',
+    desc: '侍が実践していた精神統一としての瞑想を体験。呼吸法と心を整える方法を学び、日本文化の「静」の世界に触れます。',
+    details: ['侍の精神修養について', '基本的な呼吸法', '座禅の姿勢と心構え', '短時間の瞑想実践'],
+    tags: ['リラックス', '静の体験', '約20分']
+  },
+  {
+    icon: '📜',
+    name: '折り紙体験',
+    img: '📷 折り紙作品の写真',
+    desc: '日本の伝統的な紙の芸術「折り紙」を体験。侍の兜や手裏剣など、テーマに合った作品を講師と一緒に折ります。完成品はお持ち帰り。',
+    details: ['折り紙の歴史と文化', '基本の折り方レッスン', '侍の兜 or 手裏剣を制作', '作品をお土産にお持ち帰り'],
+    tags: ['お土産付き', '子供OK', '約20分']
+  }
+];
+
+function showDetail(index) {
+  const s = services[index];
+  const html = `
+    <div style="font-size:36px; margin-bottom:4px;">${s.icon}</div>
+    <h2 style="font-size:18px; margin-bottom:4px;">${s.name}</h2>
+    <div class="img-placeholder" style="height:140px; margin:10px 0;">${s.img}</div>
+    <p style="font-size:13px; color:#555; line-height:1.7; margin-bottom:12px;">${s.desc}</p>
+    <div style="margin-bottom:12px;">
+      <h3 style="font-size:12px; color:#333; margin-bottom:4px;">体験内容</h3>
+      <ul style="font-size:12px;">${s.details.map(d => '<li>' + d + '</li>').join('')}</ul>
+    </div>
+    <div style="display:flex; gap:6px; flex-wrap:wrap;">
+      ${s.tags.map(t => '<span class="badge">' + t + '</span>').join('')}
+    </div>
+    <button class="btn btn-primary" style="margin-top:16px;" onclick="hideDetail()">閉じる</button>
+  `;
+  document.getElementById('detailContent').innerHTML = html;
+  document.getElementById('detailOverlay').classList.add('active');
+}
+
+function hideDetail(e) {
+  if (e && e.target !== document.getElementById('detailOverlay')) return;
+  document.getElementById('detailOverlay').classList.remove('active');
+}
+</script>
+
+</body>
+</html>

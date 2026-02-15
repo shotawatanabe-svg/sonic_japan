@@ -1,0 +1,46 @@
+@import "tailwindcss";
+
+@theme inline {
+  --color-primary: #B71C1C;
+  --color-primary-light: #fff5f5;
+  --color-primary-dark: #7f0000;
+  --color-accent: #D4A847;
+  --color-background: #FFFFFF;
+  --color-background-alt: #FAFAFA;
+  --color-foreground: #333333;
+  --color-foreground-muted: #666666;
+  --color-foreground-subtle: #999999;
+  --color-success: #2E7D32;
+  --color-error: #D32F2F;
+  --color-warning: #E65100;
+  --color-border: #EEEEEE;
+  --color-border-light: #F0F0F0;
+  --font-heading: var(--font-cormorant);
+  --font-body: var(--font-inter);
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--color-background);
+  color: var(--color-foreground);
+  font-family: var(--font-body), 'Noto Sans JP', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 4px;
+}
+::-webkit-scrollbar-thumb {
+  background: #ccc;
+  border-radius: 2px;
+}
+
+/* Prevent body scroll when modal is open */
+body.modal-open {
+  overflow: hidden;
+}
