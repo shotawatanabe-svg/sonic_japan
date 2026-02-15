@@ -38,8 +38,15 @@ export default function StepConfirm({
         <ConfirmRow label="📅 Date" value={dateDisplay} onEdit={() => onChangeStep(1)} />
         <ConfirmRow label="🕐 Time" value={timeDisplay} onEdit={() => onChangeStep(2)} />
         <ConfirmRow label="🎯 Experiences" value={activityNames} onEdit={() => onChangeStep(3)} small />
-        <ConfirmRow label="👤 Name" value={state.guestName} />
+        <ConfirmRow label="👤 Nickname" value={state.nickname} />
         <ConfirmRow label="👥 Guests" value={`${state.numberOfGuests} guest${(state.numberOfGuests ?? 0) > 1 ? "s" : ""}`} />
+        {state.guestSizeEntries.length > 0 && (
+          <ConfirmRow
+            label="📏 Sizes"
+            value={state.guestSizeEntries.map((g) => `${g.type}-${g.size}`).join(", ")}
+            small
+          />
+        )}
         <ConfirmRow label="🚪 Room" value={`#${state.roomNumber}`} />
         <div className="flex justify-between items-center py-2.5">
           <span className="text-xs text-foreground-subtle">💴 Price</span>

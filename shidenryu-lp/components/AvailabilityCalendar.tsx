@@ -6,9 +6,7 @@ import { motion } from "framer-motion";
 import {
   fetchAvailability,
   getDayStatus,
-  SLOT_KEYS,
   type MonthData,
-  type DaySlots,
 } from "@/lib/availability";
 
 const DAY_LABELS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
@@ -81,24 +79,6 @@ export default function AvailabilityCalendar() {
     const dateStr = formatDate(day);
     router.push(`/booking?date=${dateStr}`);
   };
-
-  /** Render 4 small dots showing slot status */
-  const renderSlotDots = (daySlots: DaySlots | undefined) => (
-    <div className="flex justify-center gap-0.5 mt-0.5">
-      {SLOT_KEYS.map((key) => {
-        const status = daySlots?.[key];
-        const isAvail = !status || status === "available";
-        return (
-          <span
-            key={key}
-            className={`inline-block w-1.5 h-1.5 rounded-full ${
-              isAvail ? "bg-green-500" : "bg-gray-300"
-            }`}
-          />
-        );
-      })}
-    </div>
-  );
 
   return (
     <section className="border-t border-border-light bg-background">
@@ -174,6 +154,8 @@ export default function AvailabilityCalendar() {
                   const daySlots = data[dateStr];
                   const dayStatus = getDayStatus(daySlots);
                   const isFull = dayStatus === "full";
+                  const isPartial = dayStatus === "partial";
+                  const isAvailable = dayStatus === "available";
                   const disabled = past || isFull;
 
                   return (
@@ -182,15 +164,28 @@ export default function AvailabilityCalendar() {
                       onClick={() => !disabled && handleDayClick(day)}
                       disabled={disabled}
                       className={`text-center py-1.5 text-xs rounded-md transition-all ${
-                        disabled
-                          ? "text-gray-300 cursor-default"
-                          : "text-foreground hover:bg-red-50 cursor-pointer"
-                      } ${past ? "line-through" : ""}`}
+                        past
+                          ? "text-gray-300 cursor-default line-through"
+                          : isFull
+                          ? "text-gray-300 bg-gray-50 cursor-default"
+                          : isPartial
+                          ? "text-amber-500 hover:bg-amber-50 cursor-pointer font-semibold"
+                          : "text-foreground hover:bg-green-50 cursor-pointer"
+                      }`}
                     >
                       <span>{day}</span>
-                      {!past && renderSlotDots(daySlots)}
+                      {!past && isAvailable && (
+                        <span className="block text-[9px] text-green-500 leading-none mt-0.5">
+                          ○
+                        </span>
+                      )}
+                      {!past && isPartial && (
+                        <span className="block text-[9px] text-amber-500 leading-none mt-0.5">
+                          ▲
+                        </span>
+                      )}
                       {!past && isFull && (
-                        <span className="block text-[8px] text-gray-400 leading-none">
+                        <span className="block text-[8px] text-gray-400 leading-none mt-0.5">
                           Full
                         </span>
                       )}
@@ -200,14 +195,18 @@ export default function AvailabilityCalendar() {
               </div>
 
               {/* Legend */}
-              <div className="flex items-center justify-center gap-4 pb-2">
-                <span className="flex items-center gap-1 text-[10px] text-foreground-subtle">
-                  <span className="w-2 h-2 rounded-full bg-green-500 inline-block" />
+              <div className="flex items-center justify-center gap-3 pb-2.5 flex-wrap">
+                <span className="flex items-center gap-1 text-[10px] text-green-600">
+                  <span className="text-[10px]">○</span>
                   Available
                 </span>
-                <span className="flex items-center gap-1 text-[10px] text-foreground-subtle">
-                  <span className="w-2 h-2 rounded-full bg-gray-300 inline-block" />
-                  Booked / Closed
+                <span className="flex items-center gap-1 text-[10px] text-amber-500">
+                  <span className="text-[10px]">▲</span>
+                  Some Booked
+                </span>
+                <span className="flex items-center gap-1 text-[10px] text-gray-400">
+                  <span className="text-[8px]">Full</span>
+                  Unavailable
                 </span>
               </div>
             </>

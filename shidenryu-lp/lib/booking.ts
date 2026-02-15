@@ -1,78 +1,57 @@
-// ─── Types ───
+// === 予約送信（Googleフォーム隠し送信） ===
 
-export type BookingRequest = {
-  date: string;           // "2026-03-07"
-  timeSlot: string;       // "20:00-21:30"
-  activities: string[];   // ["tate", "costume", "tea"]
-  guestName: string;
+// フォーム作成後に取得した entry ID をここに設定
+const FORM_ACTION_URL = process.env.NEXT_PUBLIC_GOOGLE_FORM_URL!;
+const ENTRY_IDS = {
+  date:            'entry.1320907285',
+  timeSlot:        'entry.107939701',
+  activity1:       'entry.1265307041',
+  activity2:       'entry.957390727',
+  activity3:       'entry.1790454942',
+  nickname:        'entry.289897214',
+  email:           'entry.1391089621',
+  numberOfGuests:  'entry.268241437',
+  guestSizes:      'entry.446764668',
+  roomNumber:      'entry.1937501250',
+  specialRequests: 'entry.1624378624',
+};
+
+export type BookingData = {
+  date: string;
+  timeSlot: string;
+  activities: string[];
+  nickname: string;
   email: string;
-  numberOfGuests: number; // 1–4
+  numberOfGuests: number;
+  guestSizes: string;  // "Man-L,Woman-M" format
   roomNumber: string;
-  specialRequests?: string;
+  specialRequests: string;
   agreedToTerms: boolean;
 };
 
-export type BookingResponse = {
-  success: boolean;
-  bookingId?: string;
-  error?: string;
-  message?: string;
-};
-
-// ─── Client-side submit ───
-
-/**
- * Submit a booking request to /api/booking.
- * Handles timeout (15s) and structured error responses.
- */
-export async function submitBooking(
-  data: BookingRequest
-): Promise<BookingResponse> {
-  const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), 15000);
+export async function submitBooking(data: BookingData): Promise<{ success: boolean }> {
+  const formData = new FormData();
+  formData.append(ENTRY_IDS.date, data.date);
+  formData.append(ENTRY_IDS.timeSlot, data.timeSlot);
+  formData.append(ENTRY_IDS.activity1, data.activities[0] || '');
+  formData.append(ENTRY_IDS.activity2, data.activities[1] || '');
+  formData.append(ENTRY_IDS.activity3, data.activities[2] || '');
+  formData.append(ENTRY_IDS.nickname, data.nickname);
+  formData.append(ENTRY_IDS.email, data.email);
+  formData.append(ENTRY_IDS.numberOfGuests, String(data.numberOfGuests));
+  formData.append(ENTRY_IDS.guestSizes, data.guestSizes);
+  formData.append(ENTRY_IDS.roomNumber, data.roomNumber);
+  formData.append(ENTRY_IDS.specialRequests, data.specialRequests || '');
 
   try {
-    const res = await fetch("/api/booking", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(data),
-      signal: controller.signal,
+    await fetch(FORM_ACTION_URL, {
+      method: 'POST',
+      body: formData,
+      mode: 'no-cors',
     });
-
-    clearTimeout(timeout);
-
-    const json = await res.json().catch(() => ({
-      success: false,
-      error: "parse_error",
-      message: "Failed to parse response.",
-    }));
-
-    if (!res.ok) {
-      return {
-        success: false,
-        error: json.error ?? "server_error",
-        message:
-          json.message ??
-          `Request failed (${res.status}). Please try again.`,
-      };
-    }
-
-    return json;
-  } catch (err) {
-    clearTimeout(timeout);
-
-    if (err instanceof DOMException && err.name === "AbortError") {
-      return {
-        success: false,
-        error: "timeout",
-        message: "Request timed out. Please try again.",
-      };
-    }
-
-    return {
-      success: false,
-      error: "network_error",
-      message: "A network error occurred. Please check your connection.",
-    };
+    return { success: true };
+  } catch (error) {
+    console.error('Form submission failed:', error);
+    return { success: false };
   }
 }

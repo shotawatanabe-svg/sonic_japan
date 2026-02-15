@@ -67,15 +67,21 @@ export default function StepTimeSlots({
                 isSelected
                   ? "bg-primary text-white border-primary font-semibold"
                   : isDisabled
-                  ? "bg-gray-50 border-gray-100 text-gray-300 cursor-not-allowed"
+                  ? "bg-gray-100 border-gray-200 text-gray-400 cursor-not-allowed"
                   : "border-border text-foreground hover:border-primary"
               }`}
             >
-              <span className="text-sm font-semibold block">{slot.label}</span>
+              <span
+                className={`text-sm font-semibold block ${
+                  isDisabled && !isSelected ? "text-gray-400" : ""
+                }`}
+              >
+                {slot.label}
+              </span>
               <span
                 className={`text-[10px] block mt-0.5 ${
                   isSelected
-                    ? ""
+                    ? "text-white/80"
                     : isBooked
                     ? "text-gray-400"
                     : isClosed
@@ -89,6 +95,8 @@ export default function StepTimeSlots({
                   ? "✕ Booked"
                   : isClosed
                   ? "✕ Closed"
+                  : isAvailable
+                  ? "◎ Available"
                   : "◎ Available"}
               </span>
             </button>

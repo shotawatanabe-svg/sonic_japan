@@ -3,7 +3,7 @@
 import { useState } from "react";
 
 interface GuestData {
-  guestName: string;
+  nickname: string;
   email: string;
   numberOfGuests: number | null;
   roomNumber: string;
@@ -30,8 +30,8 @@ export default function GuestForm({
   const validate = (): boolean => {
     const newErrors: Record<string, string> = {};
 
-    if (!data.guestName.trim()) {
-      newErrors.guestName = "Name is required";
+    if (!data.nickname.trim()) {
+      newErrors.nickname = "Nickname is required";
     }
     if (!data.email.trim()) {
       newErrors.email = "Email is required";
@@ -65,22 +65,22 @@ export default function GuestForm({
       {/* Name */}
       <div className="mb-3">
         <label className="block text-[11px] font-bold text-foreground-muted mb-1">
-          Name <span className="text-error">*</span>
+          Nickname <span className="text-error">*</span>
         </label>
         <input
           type="text"
-          value={data.guestName}
+          value={data.nickname}
           onChange={(e) => {
-            onChange({ guestName: e.target.value });
-            if (errors.guestName) setErrors((prev) => ({ ...prev, guestName: "" }));
+            onChange({ nickname: e.target.value });
+            if (errors.nickname) setErrors((prev) => ({ ...prev, nickname: "" }));
           }}
-          placeholder="John Smith"
+          placeholder="John"
           className={`w-full px-3 py-2.5 border rounded-lg text-sm bg-background-alt focus:outline-none focus:ring-2 focus:ring-primary/30 ${
-            errors.guestName ? "border-error" : "border-border"
+            errors.nickname ? "border-error" : "border-border"
           }`}
         />
-        {errors.guestName && (
-          <p className="text-[10px] text-error mt-1">{errors.guestName}</p>
+        {errors.nickname && (
+          <p className="text-[10px] text-error mt-1">{errors.nickname}</p>
         )}
       </div>
 

@@ -83,7 +83,7 @@ export default function ConfirmSection({
         {/* Guest Name */}
         <div className="flex justify-between items-center py-2.5 border-b border-border-light">
           <span className="text-xs text-foreground-subtle">👤 Name</span>
-          <span className="text-xs font-bold">{state.guestName}</span>
+          <span className="text-xs font-bold">{state.nickname}</span>
         </div>
 
         {/* Guests */}

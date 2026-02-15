@@ -99,10 +99,14 @@ function BookingContent() {
     if (confirmed) router.push("/");
   };
 
-  // Step 1: Date → auto-advance to Step 2
+  // Step 1: Date — タップで選択のみ（即遷移しない）
   const handleDateSelect = (date: string) => {
     setState((prev) => ({ ...prev, date }));
-    setTimeout(() => goToStep(2, 1), 300);
+  };
+
+  // Step 1: 確定ボタンで Step 2 へ
+  const handleDateConfirm = () => {
+    if (state.date) goToStep(2, 1);
   };
 
   // Step 2: Time → auto-advance to Step 3
@@ -123,7 +127,7 @@ function BookingContent() {
 
   // Step 4: Guest data update
   const handleGuestChange = (
-    data: Partial<Pick<BookingState, "guestName" | "email" | "numberOfGuests" | "roomNumber" | "specialRequests">>
+    data: Partial<Pick<BookingState, "nickname" | "email" | "numberOfGuests" | "guestSizeEntries" | "roomNumber" | "specialRequests">>
   ) => {
     setState((prev) => ({ ...prev, ...data }));
   };
@@ -138,45 +142,42 @@ function BookingContent() {
     : "";
   const timeLabel = state.timeSlot?.replace("-", "–") ?? "";
 
-  // Step 5: Submit booking via lib/booking.ts
+  // Step 5: Submit booking via Googleフォーム隠し送信
   const handleSubmit = async () => {
     if (!state.agreedToTerms || state.isSubmitting) return;
 
     setState((prev) => ({ ...prev, isSubmitting: true, error: null }));
 
+    // guestSizeEntries → カンマ区切り文字列に結合
+    const guestSizes = state.guestSizeEntries
+      .map((g) => `${g.type}-${g.size}`)
+      .join(",");
+
     const result = await submitBooking({
       date: state.date!,
       timeSlot: state.timeSlot!,
       activities: state.activities,
-      guestName: state.guestName,
+      nickname: state.nickname,
       email: state.email,
       numberOfGuests: state.numberOfGuests!,
+      guestSizes,
       roomNumber: state.roomNumber,
-      specialRequests: state.specialRequests || undefined,
+      specialRequests: state.specialRequests || "",
       agreedToTerms: state.agreedToTerms,
     });
 
-    if (result.success && result.bookingId) {
+    if (result.success) {
       // Clear saved session before navigating away
       sessionStorage.removeItem(STORAGE_KEY);
       // Use replace so browser back doesn't return to /booking
       router.replace(
-        `/thanks?id=${result.bookingId}&date=${state.date}&time=${state.timeSlot}&activities=${state.activities.join(",")}&name=${encodeURIComponent(state.guestName)}&email=${encodeURIComponent(state.email)}&guests=${state.numberOfGuests}`
+        `/thanks?date=${state.date}&time=${state.timeSlot}&activities=${state.activities.join(",")}&name=${encodeURIComponent(state.nickname)}&email=${encodeURIComponent(state.email)}&guests=${state.numberOfGuests}`
       );
-    } else if (result.error === "slot_taken") {
-      // Slot was taken → show message and go back to Step 2
-      setState((prev) => ({
-        ...prev,
-        isSubmitting: false,
-        timeSlot: null,
-        error: "This time slot has just been booked. Please select a different time.",
-      }));
-      goToStep(2, -1);
     } else {
       setState((prev) => ({
         ...prev,
         isSubmitting: false,
-        error: result.message || "An unexpected error occurred. Please try again.",
+        error: "Submission failed. Please try again.",
       }));
     }
   };
@@ -236,6 +237,7 @@ function BookingContent() {
                 <StepCalendar
                   selectedDate={state.date}
                   onSelectDate={handleDateSelect}
+                  onConfirm={handleDateConfirm}
                 />
               </div>
             )}
@@ -297,9 +299,10 @@ function BookingContent() {
                 </h2>
                 <StepGuestInfo
                   data={{
-                    guestName: state.guestName,
+                    nickname: state.nickname,
                     email: state.email,
                     numberOfGuests: state.numberOfGuests,
+                    guestSizeEntries: state.guestSizeEntries,
                     roomNumber: state.roomNumber,
                     specialRequests: state.specialRequests,
                   }}

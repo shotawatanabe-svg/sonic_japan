@@ -1,11 +1,17 @@
+export type GuestSizeEntry = {
+  type: "Man" | "Woman" | "Boy" | "Girl";
+  size: string;
+};
+
 export type BookingState = {
   currentStep: 1 | 2 | 3 | 4 | 5;
   date: string | null;
   timeSlot: string | null;
   activities: string[];
-  guestName: string;
+  nickname: string;
   email: string;
   numberOfGuests: number | null;
+  guestSizeEntries: GuestSizeEntry[];
   roomNumber: string;
   specialRequests: string;
   agreedToTerms: boolean;
@@ -17,9 +23,10 @@ export type BookingRequest = {
   date: string;
   timeSlot: string;
   activities: string[];
-  guestName: string;
+  nickname: string;
   email: string;
   numberOfGuests: number;
+  guestSizes: string;
   roomNumber: string;
   specialRequests?: string;
   agreedToTerms: boolean;
@@ -37,9 +44,10 @@ export const INITIAL_BOOKING_STATE: BookingState = {
   date: null,
   timeSlot: null,
   activities: [],
-  guestName: "",
+  nickname: "",
   email: "",
   numberOfGuests: null,
+  guestSizeEntries: [],
   roomNumber: "",
   specialRequests: "",
   agreedToTerms: false,
