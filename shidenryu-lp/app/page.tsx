@@ -4,20 +4,25 @@ import About from "@/components/About";
 import ServiceGrid from "@/components/ServiceGrid";
 import SessionFlow from "@/components/SessionFlow";
 import Pricing from "@/components/Pricing";
+import AvailabilityCalendar from "@/components/AvailabilityCalendar";
 import Info from "@/components/Info";
 import FAQ from "@/components/FAQ";
 import CTASection from "@/components/CTASection";
 import Footer from "@/components/Footer";
+import { fetchServices } from "@/lib/fetch-services";
 
-export default function Home() {
+export default async function Home() {
+  const services = await fetchServices();
+
   return (
     <main className="min-h-screen bg-background">
       <Header />
       <Hero />
       <About />
-      <ServiceGrid />
+      <ServiceGrid services={services} />
       <SessionFlow />
       <Pricing />
+      <AvailabilityCalendar />
       <Info />
       <FAQ />
       <CTASection />

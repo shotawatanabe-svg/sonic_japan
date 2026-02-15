@@ -1,10 +1,10 @@
 "use client";
 
-import { Suspense, useEffect, useCallback } from "react";
+import { Suspense, useEffect, useCallback, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { motion } from "framer-motion";
 import Link from "next/link";
-import { services } from "@/lib/services";
+import type { Service } from "@/lib/services";
 
 function ThanksContent() {
   const searchParams = useSearchParams();
@@ -16,6 +16,16 @@ function ThanksContent() {
   const guestName = searchParams.get("name") ?? "Guest";
   const email = searchParams.get("email") ?? "";
   const guests = searchParams.get("guests") ?? "1";
+
+  const [services, setServices] = useState<Service[]>([]);
+
+  // Fetch services for activity name resolution
+  useEffect(() => {
+    fetch("/api/services")
+      .then((r) => r.json())
+      .then((d) => setServices(d.services || []))
+      .catch(() => setServices([]));
+  }, []);
 
   const activityIds = activitiesParam.split(",").filter(Boolean);
   const activityNames = activityIds
@@ -211,7 +221,7 @@ function ThanksContent() {
             {[
               { label: "📅 Date", value: dateDisplay },
               { label: "🕐 Time", value: timeDisplay },
-              { label: "🎯 Experiences", value: activityNames },
+              { label: "🎯 Experiences", value: activityNames || "Loading..." },
               {
                 label: "👥 Guests",
                 value: `${guests} guest${Number(guests) > 1 ? "s" : ""}`,
@@ -265,6 +275,13 @@ function ThanksContent() {
           >
             📲 Add to Calendar (Tentative)
           </button>
+
+          <Link
+            href="/"
+            className="block w-full mt-3 bg-foreground text-white font-bold py-3 rounded-lg hover:opacity-85 transition-opacity text-sm text-center"
+          >
+            Return to Top Page
+          </Link>
 
           <p className="mt-5 text-[11px] text-foreground-subtle">
             Questions? Contact us at

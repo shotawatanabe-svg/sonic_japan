@@ -6,24 +6,77 @@ import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import { INITIAL_BOOKING_STATE } from "@/lib/booking-types";
 import type { BookingState } from "@/lib/booking-types";
-import ProgressBar from "@/components/ProgressBar";
-import Calendar from "@/components/Calendar";
-import TimeSlots from "@/components/TimeSlots";
-import ActivityPicker from "@/components/ActivityPicker";
-import GuestForm from "@/components/GuestForm";
-import ConfirmSection from "@/components/ConfirmSection";
+import type { Service } from "@/lib/services";
+import { submitBooking } from "@/lib/booking";
+import BookingProgressBar from "@/components/booking/ProgressBar";
+import StepCalendar from "@/components/booking/StepCalendar";
+import StepTimeSlots from "@/components/booking/StepTimeSlots";
+import StepActivities from "@/components/booking/StepActivities";
+import StepGuestInfo from "@/components/booking/StepGuestInfo";
+import StepConfirm from "@/components/booking/StepConfirm";
+
+const STORAGE_KEY = "shidenryu_booking";
 
 function BookingContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const preselect = searchParams.get("preselect");
 
-  const [state, setState] = useState<BookingState>(() => ({
-    ...INITIAL_BOOKING_STATE,
-    activities: preselect ? [preselect] : [],
-  }));
+  const [state, setState] = useState<BookingState>(INITIAL_BOOKING_STATE);
+  const [initialized, setInitialized] = useState(false);
+  const [direction, setDirection] = useState<1 | -1>(1);
+  const [services, setServices] = useState<Service[]>([]);
 
-  const [direction, setDirection] = useState<1 | -1>(1); // 1 = forward, -1 = back
+  // ── Fetch services from API on mount ──
+  useEffect(() => {
+    fetch("/api/services")
+      .then((r) => r.json())
+      .then((d) => setServices(d.services || []))
+      .catch(() => setServices([]));
+  }, []);
+
+  // ── Mount: restore from sessionStorage, then apply query param overrides ──
+  useEffect(() => {
+    const dateParam = searchParams.get("date");
+    const preselectParam = searchParams.get("preselect");
+
+    // 1. Try restoring from sessionStorage
+    let restored: BookingState = { ...INITIAL_BOOKING_STATE };
+    try {
+      const saved = sessionStorage.getItem(STORAGE_KEY);
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        restored = { ...restored, ...parsed, isSubmitting: false, error: null };
+      }
+    } catch { /* ignore parse errors */ }
+
+    // 2. Query params override sessionStorage values
+    if (dateParam) {
+      restored.date = dateParam;
+      restored.currentStep = 2;
+    }
+    if (preselectParam) {
+      if (!restored.activities.includes(preselectParam)) {
+        restored.activities = [
+          ...restored.activities.filter((a) => a !== preselectParam),
+          preselectParam,
+        ].slice(0, 3);
+      }
+    }
+
+    setState(restored);
+    setInitialized(true);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // ── Auto-save to sessionStorage on every state change ──
+  useEffect(() => {
+    if (!initialized) return;
+    try {
+      // Exclude transient fields from persistence
+      const { isSubmitting: _s, error: _e, ...toSave } = state;
+      void _s; void _e;
+      sessionStorage.setItem(STORAGE_KEY, JSON.stringify(toSave));
+    } catch { /* storage full or unavailable */ }
+  }, [state, initialized]);
 
   // Scroll to top on step change
   useEffect(() => {
@@ -38,48 +91,39 @@ function BookingContent() {
     [state.currentStep]
   );
 
-  // Close / exit booking
+  // Close / exit booking with confirmation dialog
   const handleClose = () => {
     const confirmed = window.confirm(
       "Cancel your booking? All entered information will be lost."
     );
-    if (confirmed) {
-      router.push("/");
-    }
+    if (confirmed) router.push("/");
   };
 
-  // Date selection → auto-advance to Step 2
+  // Step 1: Date → auto-advance to Step 2
   const handleDateSelect = (date: string) => {
     setState((prev) => ({ ...prev, date }));
     setTimeout(() => goToStep(2, 1), 300);
   };
 
-  // Time selection → auto-advance to Step 3
+  // Step 2: Time → auto-advance to Step 3
   const handleTimeSelect = (timeSlot: string) => {
     setState((prev) => ({ ...prev, timeSlot }));
     setTimeout(() => goToStep(3, 1), 300);
   };
 
-  // Toggle activity
+  // Step 3: Toggle activity
   const handleToggleActivity = (id: string) => {
     setState((prev) => {
       const exists = prev.activities.includes(id);
-      if (exists) {
-        return { ...prev, activities: prev.activities.filter((a) => a !== id) };
-      }
+      if (exists) return { ...prev, activities: prev.activities.filter((a) => a !== id) };
       if (prev.activities.length >= 3) return prev;
       return { ...prev, activities: [...prev.activities, id] };
     });
   };
 
-  // Guest data update
+  // Step 4: Guest data update
   const handleGuestChange = (
-    data: Partial<
-      Pick<
-        BookingState,
-        "guestName" | "email" | "numberOfGuests" | "roomNumber" | "specialRequests"
-      >
-    >
+    data: Partial<Pick<BookingState, "guestName" | "email" | "numberOfGuests" | "roomNumber" | "specialRequests">>
   ) => {
     setState((prev) => ({ ...prev, ...data }));
   };
@@ -94,66 +138,50 @@ function BookingContent() {
     : "";
   const timeLabel = state.timeSlot?.replace("-", "–") ?? "";
 
-  // Submit booking
+  // Step 5: Submit booking via lib/booking.ts
   const handleSubmit = async () => {
     if (!state.agreedToTerms || state.isSubmitting) return;
 
     setState((prev) => ({ ...prev, isSubmitting: true, error: null }));
 
-    const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 15000);
+    const result = await submitBooking({
+      date: state.date!,
+      timeSlot: state.timeSlot!,
+      activities: state.activities,
+      guestName: state.guestName,
+      email: state.email,
+      numberOfGuests: state.numberOfGuests!,
+      roomNumber: state.roomNumber,
+      specialRequests: state.specialRequests || undefined,
+      agreedToTerms: state.agreedToTerms,
+    });
 
-    try {
-      const res = await fetch("/api/booking", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          date: state.date,
-          timeSlot: state.timeSlot,
-          activities: state.activities,
-          guestName: state.guestName,
-          email: state.email,
-          numberOfGuests: state.numberOfGuests,
-          roomNumber: state.roomNumber,
-          specialRequests: state.specialRequests || undefined,
-          agreedToTerms: state.agreedToTerms,
-        }),
-        signal: controller.signal,
-      });
-
-      clearTimeout(timeout);
-
-      if (!res.ok) {
-        const data = await res.json().catch(() => ({}));
-        throw new Error(
-          data.message || `Request failed (${res.status}). Please try again.`
-        );
-      }
-
-      const data = await res.json();
-      // Use replace so user can't go back to booking form
+    if (result.success && result.bookingId) {
+      // Clear saved session before navigating away
+      sessionStorage.removeItem(STORAGE_KEY);
+      // Use replace so browser back doesn't return to /booking
       router.replace(
-        `/thanks?id=${data.bookingId}&date=${state.date}&time=${state.timeSlot}&activities=${state.activities.join(",")}&name=${encodeURIComponent(state.guestName)}&email=${encodeURIComponent(state.email)}&guests=${state.numberOfGuests}`
+        `/thanks?id=${result.bookingId}&date=${state.date}&time=${state.timeSlot}&activities=${state.activities.join(",")}&name=${encodeURIComponent(state.guestName)}&email=${encodeURIComponent(state.email)}&guests=${state.numberOfGuests}`
       );
-    } catch (err) {
-      if (err instanceof DOMException && err.name === "AbortError") {
-        setState((prev) => ({
-          ...prev,
-          isSubmitting: false,
-          error: "Request timed out. Please try again.",
-        }));
-      } else {
-        setState((prev) => ({
-          ...prev,
-          isSubmitting: false,
-          error:
-            err instanceof Error ? err.message : "An unexpected error occurred.",
-        }));
-      }
+    } else if (result.error === "slot_taken") {
+      // Slot was taken → show message and go back to Step 2
+      setState((prev) => ({
+        ...prev,
+        isSubmitting: false,
+        timeSlot: null,
+        error: "This time slot has just been booked. Please select a different time.",
+      }));
+      goToStep(2, -1);
+    } else {
+      setState((prev) => ({
+        ...prev,
+        isSubmitting: false,
+        error: result.message || "An unexpected error occurred. Please try again.",
+      }));
     }
   };
 
-  // Slide animation variants
+  // Slide animation
   const variants = {
     enter: (d: number) => ({ x: d > 0 ? 200 : -200, opacity: 0 }),
     center: { x: 0, opacity: 1 },
@@ -165,10 +193,7 @@ function BookingContent() {
       {/* Header */}
       <header className="sticky top-0 z-50 bg-white border-b border-border">
         <div className="max-w-lg mx-auto flex items-center justify-between px-4 py-3">
-          <Link
-            href="/"
-            className="font-heading text-xl font-bold tracking-wider text-foreground"
-          >
+          <Link href="/" className="font-heading text-xl font-bold tracking-wider text-foreground">
             SHIDENRYU
           </Link>
           <button
@@ -181,10 +206,15 @@ function BookingContent() {
       </header>
 
       {/* Progress Bar */}
-      <ProgressBar currentStep={state.currentStep} />
+      <BookingProgressBar currentStep={state.currentStep} />
 
       {/* Step Content */}
       <div className="max-w-lg mx-auto overflow-hidden">
+        {!initialized ? (
+          <div className="flex items-center justify-center py-20">
+            <div className="animate-spin rounded-full h-6 w-6 border-2 border-primary border-t-transparent" />
+          </div>
+        ) : (
         <AnimatePresence mode="wait" custom={direction}>
           <motion.div
             key={state.currentStep}
@@ -196,55 +226,50 @@ function BookingContent() {
             transition={{ duration: 0.25, ease: "easeInOut" }}
             className="px-4 py-6"
           >
-            {/* Step 1: Date */}
+            {/* ── Step 1: Date ── */}
             {state.currentStep === 1 && (
               <div>
-                <span className="inline-block bg-orange-700 text-white text-[10px] font-bold px-2 py-0.5 rounded mb-3 tracking-wider uppercase">
-                  Date Selection
-                </span>
+                <StepTag>Date Selection</StepTag>
                 <h2 className="font-heading text-xl font-bold mb-4 text-foreground">
                   Choose Your Date
                 </h2>
-                <Calendar
+                <StepCalendar
                   selectedDate={state.date}
                   onSelectDate={handleDateSelect}
                 />
               </div>
             )}
 
-            {/* Step 2: Time */}
+            {/* ── Step 2: Time ── */}
             {state.currentStep === 2 && (
               <div>
-                <span className="inline-block bg-orange-700 text-white text-[10px] font-bold px-2 py-0.5 rounded mb-3 tracking-wider uppercase">
-                  Time Selection
-                </span>
+                <StepTag>Time Selection</StepTag>
                 <h2 className="font-heading text-xl font-bold mb-4 text-foreground">
                   Choose Your Time
                 </h2>
-                <TimeSlots
+                {state.error && (
+                  <div className="bg-red-50 border border-red-200 rounded-lg p-3 mb-4">
+                    <p className="text-xs text-error">{state.error}</p>
+                  </div>
+                )}
+                <StepTimeSlots
                   selectedDate={state.date}
                   selectedSlot={state.timeSlot}
                   onSelectSlot={handleTimeSelect}
                 />
-                <button
-                  onClick={() => goToStep(1, -1)}
-                  className="mt-6 text-sm text-foreground-muted hover:text-foreground transition-colors"
-                >
-                  ← Back
-                </button>
+                <BackButton onClick={() => goToStep(1, -1)} />
               </div>
             )}
 
-            {/* Step 3: Activities */}
+            {/* ── Step 3: Activities ── */}
             {state.currentStep === 3 && (
               <div>
-                <span className="inline-block bg-orange-700 text-white text-[10px] font-bold px-2 py-0.5 rounded mb-3 tracking-wider uppercase">
-                  Experience Selection
-                </span>
+                <StepTag>Experience Selection</StepTag>
                 <h2 className="font-heading text-xl font-bold mb-4 text-foreground">
                   Pick 3 Experiences
                 </h2>
-                <ActivityPicker
+                <StepActivities
+                  services={services}
                   selected={state.activities}
                   onToggle={handleToggleActivity}
                 />
@@ -259,25 +284,18 @@ function BookingContent() {
                 >
                   Next: Guest Information →
                 </button>
-                <button
-                  onClick={() => goToStep(2, -1)}
-                  className="mt-3 w-full text-sm text-foreground-muted hover:text-foreground transition-colors text-center"
-                >
-                  ← Back
-                </button>
+                <BackButton onClick={() => goToStep(2, -1)} />
               </div>
             )}
 
-            {/* Step 4: Guest Info */}
+            {/* ── Step 4: Guest Info ── */}
             {state.currentStep === 4 && (
               <div>
-                <span className="inline-block bg-orange-700 text-white text-[10px] font-bold px-2 py-0.5 rounded mb-3 tracking-wider uppercase">
-                  Guest Information
-                </span>
+                <StepTag>Guest Information</StepTag>
                 <h2 className="font-heading text-xl font-bold mb-4 text-foreground">
                   Enter Your Details
                 </h2>
-                <GuestForm
+                <StepGuestInfo
                   data={{
                     guestName: state.guestName,
                     email: state.email,
@@ -290,25 +308,19 @@ function BookingContent() {
                   dateLabel={dateLabel}
                   timeLabel={timeLabel}
                 />
-                <button
-                  onClick={() => goToStep(3, -1)}
-                  className="mt-3 w-full text-sm text-foreground-muted hover:text-foreground transition-colors text-center"
-                >
-                  ← Back
-                </button>
+                <BackButton onClick={() => goToStep(3, -1)} />
               </div>
             )}
 
-            {/* Step 5: Confirm */}
+            {/* ── Step 5: Confirm ── */}
             {state.currentStep === 5 && (
               <div>
-                <span className="inline-block bg-orange-700 text-white text-[10px] font-bold px-2 py-0.5 rounded mb-3 tracking-wider uppercase">
-                  Confirmation
-                </span>
+                <StepTag>Confirmation</StepTag>
                 <h2 className="font-heading text-xl font-bold mb-4 text-foreground">
                   Confirm Your Request
                 </h2>
-                <ConfirmSection
+                <StepConfirm
+                  services={services}
                   state={state}
                   onChangeStep={goToStep}
                   onToggleTerms={(agreed) =>
@@ -316,27 +328,46 @@ function BookingContent() {
                   }
                   onSubmit={handleSubmit}
                 />
-                <button
-                  onClick={() => goToStep(4, -1)}
-                  className="mt-3 w-full text-sm text-foreground-muted hover:text-foreground transition-colors text-center"
-                >
-                  ← Back
-                </button>
+                <BackButton onClick={() => goToStep(4, -1)} />
               </div>
             )}
           </motion.div>
         </AnimatePresence>
+        )}
       </div>
     </div>
   );
 }
+
+/* ── Tiny sub-components ── */
+
+function StepTag({ children }: { children: React.ReactNode }) {
+  return (
+    <span className="inline-block bg-orange-700 text-white text-[10px] font-bold px-2 py-0.5 rounded mb-3 tracking-wider uppercase">
+      {children}
+    </span>
+  );
+}
+
+function BackButton({ onClick }: { onClick: () => void }) {
+  return (
+    <button
+      onClick={onClick}
+      className="mt-3 w-full text-sm text-foreground-muted hover:text-foreground transition-colors text-center"
+    >
+      ← Back
+    </button>
+  );
+}
+
+/* ── Page export with Suspense boundary ── */
 
 export default function BookingPage() {
   return (
     <Suspense
       fallback={
         <div className="min-h-screen bg-background flex items-center justify-center">
-          <p className="text-foreground-muted">Loading...</p>
+          <p className="text-foreground-muted">Loading…</p>
         </div>
       }
     >

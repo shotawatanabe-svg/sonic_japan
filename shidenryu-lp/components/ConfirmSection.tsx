@@ -1,9 +1,10 @@
 "use client";
 
-import { services } from "@/lib/services";
+import type { Service } from "@/lib/services";
 import type { BookingState } from "@/lib/booking-types";
 
 interface Props {
+  services: Service[];
   state: BookingState;
   onChangeStep: (step: 1 | 2 | 3 | 4 | 5) => void;
   onToggleTerms: (agreed: boolean) => void;
@@ -11,6 +12,7 @@ interface Props {
 }
 
 export default function ConfirmSection({
+  services,
   state,
   onChangeStep,
   onToggleTerms,

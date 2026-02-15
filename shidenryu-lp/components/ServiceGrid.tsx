@@ -2,10 +2,14 @@
 
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { services } from "@/lib/services";
+import type { Service } from "@/lib/services";
 import ServiceDetailModal from "./ServiceDetailModal";
 
-export default function ServiceGrid() {
+interface Props {
+  services: Service[];
+}
+
+export default function ServiceGrid({ services }: Props) {
   const [selectedService, setSelectedService] = useState<number | null>(null);
 
   return (

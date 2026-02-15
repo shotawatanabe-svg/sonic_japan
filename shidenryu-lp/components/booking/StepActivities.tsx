@@ -8,7 +8,7 @@ interface Props {
   onToggle: (id: string) => void;
 }
 
-export default function ActivityPicker({ services, selected, onToggle }: Props) {
+export default function StepActivities({ services, selected, onToggle }: Props) {
   const canSelectMore = selected.length < 3;
 
   return (
@@ -21,9 +21,7 @@ export default function ActivityPicker({ services, selected, onToggle }: Props) 
           return (
             <button
               key={service.id}
-              onClick={() => {
-                if (!isDisabled) onToggle(service.id);
-              }}
+              onClick={() => !isDisabled && onToggle(service.id)}
               disabled={isDisabled}
               className={`relative border-2 rounded-lg p-2.5 text-center transition-all ${
                 isSelected
@@ -33,7 +31,6 @@ export default function ActivityPicker({ services, selected, onToggle }: Props) 
                   : "border-border hover:border-primary cursor-pointer"
               }`}
             >
-              {/* Check badge */}
               {isSelected && (
                 <span className="absolute top-1 right-1 w-4 h-4 rounded-full bg-primary text-white text-[9px] font-bold flex items-center justify-center">
                   ✓
@@ -48,12 +45,10 @@ export default function ActivityPicker({ services, selected, onToggle }: Props) 
         })}
       </div>
 
-      {/* Counter */}
       <p className="text-center text-sm text-foreground-subtle mt-3">
         <strong className="text-primary">{selected.length}</strong> / 3 selected
       </p>
 
-      {/* Price summary */}
       <div className="text-center mt-3 p-3 bg-background-alt rounded-lg">
         <p className="text-xs text-foreground-muted">Price (fixed)</p>
         <p className="text-2xl font-bold text-primary">¥40,000</p>
