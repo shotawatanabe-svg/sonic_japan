@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import type { Service } from "@/lib/services";
 import ServiceDetailModal from "./ServiceDetailModal";
@@ -9,8 +9,25 @@ interface Props {
   services: Service[];
 }
 
-export default function ServiceGrid({ services }: Props) {
+export default function ServiceGrid({ services: initialServices }: Props) {
+  const [services, setServices] = useState<Service[]>(initialServices);
   const [selectedService, setSelectedService] = useState<number | null>(null);
+
+  // サーバーから渡されたデータが空の場合、クライアントサイドでAPIから取得
+  useEffect(() => {
+    if (initialServices.length > 0) {
+      setServices(initialServices);
+      return;
+    }
+    fetch("/api/services")
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.services && data.services.length > 0) {
+          setServices(data.services);
+        }
+      })
+      .catch(() => {});
+  }, [initialServices]);
 
   return (
     <section className="border-t border-border-light bg-background">
