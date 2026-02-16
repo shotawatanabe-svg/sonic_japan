@@ -1,6 +1,8 @@
 "use client";
 
+import { useState } from "react";
 import type { Service } from "@/lib/services";
+import ServiceDetailModal from "@/components/ServiceDetailModal";
 
 interface Props {
   services: Service[];
@@ -10,6 +12,7 @@ interface Props {
 
 export default function StepActivities({ services, selected, onToggle }: Props) {
   const canSelectMore = selected.length < 3;
+  const [detailService, setDetailService] = useState<Service | null>(null);
 
   return (
     <div>
@@ -19,28 +22,40 @@ export default function StepActivities({ services, selected, onToggle }: Props) 
           const isDisabled = !isSelected && !canSelectMore;
 
           return (
-            <button
-              key={service.id}
-              onClick={() => !isDisabled && onToggle(service.id)}
-              disabled={isDisabled}
-              className={`relative border-2 rounded-lg p-2.5 text-center transition-all ${
-                isSelected
-                  ? "border-primary bg-primary-light"
-                  : isDisabled
-                  ? "border-gray-100 bg-gray-50 opacity-50 cursor-default"
-                  : "border-border hover:border-primary cursor-pointer"
-              }`}
-            >
-              {isSelected && (
-                <span className="absolute top-1 right-1 w-4 h-4 rounded-full bg-primary text-white text-[9px] font-bold flex items-center justify-center">
-                  ✓
-                </span>
-              )}
-              <div className="text-2xl">{service.icon}</div>
-              <div className="text-[9px] font-semibold text-foreground leading-tight mt-1">
-                {service.name.split("(")[0].trim()}
-              </div>
-            </button>
+            <div key={service.id} className="relative">
+              <button
+                onClick={() => !isDisabled && onToggle(service.id)}
+                disabled={isDisabled}
+                className={`relative w-full border-2 rounded-lg p-2.5 text-center transition-all ${
+                  isSelected
+                    ? "border-primary bg-primary-light"
+                    : isDisabled
+                    ? "border-gray-100 bg-gray-50 opacity-50 cursor-default"
+                    : "border-border hover:border-primary cursor-pointer"
+                }`}
+              >
+                {isSelected && (
+                  <span className="absolute top-1 left-1 w-4 h-4 rounded-full bg-primary text-white text-[9px] font-bold flex items-center justify-center">
+                    ✓
+                  </span>
+                )}
+                <div className="text-2xl mt-1">{service.icon}</div>
+                <div className="text-[9px] font-semibold text-foreground leading-tight mt-1">
+                  {service.name.split("(")[0].trim()}
+                </div>
+              </button>
+              {/* Info button - top right */}
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setDetailService(service);
+                }}
+                className="absolute top-1 right-1 w-5 h-5 rounded-full bg-gray-200 hover:bg-gray-300 text-gray-600 text-[10px] font-bold flex items-center justify-center transition-colors z-10"
+                aria-label={`Details about ${service.name}`}
+              >
+                ℹ
+              </button>
+            </div>
           );
         })}
       </div>
@@ -56,6 +71,14 @@ export default function StepActivities({ services, selected, onToggle }: Props) 
           Tax included · Pay on-site
         </p>
       </div>
+
+      {/* Detail Modal */}
+      {detailService && (
+        <ServiceDetailModal
+          service={detailService}
+          onClose={() => setDetailService(null)}
+        />
+      )}
     </div>
   );
 }

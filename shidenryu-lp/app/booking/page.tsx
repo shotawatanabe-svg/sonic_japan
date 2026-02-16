@@ -195,7 +195,7 @@ function BookingContent() {
       <header className="sticky top-0 z-50 bg-white border-b border-border">
         <div className="max-w-lg mx-auto flex items-center justify-between px-4 py-3">
           <Link href="/" className="font-heading text-xl font-bold tracking-wider text-foreground">
-            SHIDENRYU
+            Sonic Japan
           </Link>
           <button
             onClick={handleClose}

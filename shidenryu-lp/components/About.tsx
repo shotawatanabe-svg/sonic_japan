@@ -16,17 +16,18 @@ export default function About() {
             About
           </span>
           <h2 className="font-heading text-2xl font-bold mb-3 text-foreground">
-            What is Tate (Sword Fighting)?
+            Who Is Sonic Japan?
           </h2>
           <p className="text-foreground-muted text-sm leading-relaxed mb-4">
-            Tate is the traditional Japanese art of staged sword combat. It embodies the
-            samurai spirit — discipline, aesthetics, and respect — through powerful yet
-            graceful choreographed movements. SHIDENRYU brings this authentic art form
-            directly to you as world-class entertainment.
+            Sonic Japan is a collective of professional performers rooted in decades of
+            Japanese traditional arts — sword fighting, dance, tea ceremony, and more.
+            Our masters have performed on stage, film, and television, carrying forward
+            centuries of living culture.
           </p>
           <p className="text-foreground-muted text-sm leading-relaxed">
-            A professional performer visits your hotel room. No need to go out — enjoy a
-            genuine cultural experience in the comfort of your own space.
+            Now, they bring that artistry directly to you. No need to go out — a genuine
+            cultural experience comes to the comfort of your hotel room, guided by the
+            very people who have dedicated their lives to these traditions.
           </p>
         </motion.div>
       </div>

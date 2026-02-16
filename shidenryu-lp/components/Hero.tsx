@@ -27,9 +27,9 @@ export default function Hero() {
           transition={{ duration: 0.6, delay: 0.2 }}
           className="font-heading text-3xl sm:text-4xl font-bold leading-tight mb-3 text-foreground"
         >
-          Step Into the
+          Learn from the
           <br />
-          World of Samurai.
+          Masters of Japan.
         </motion.h1>
 
         {/* Subtext */}
@@ -39,9 +39,9 @@ export default function Hero() {
           transition={{ duration: 0.6, delay: 0.3 }}
           className="text-foreground-muted text-sm leading-relaxed mb-4"
         >
-          Authentic Japanese cultural experiences delivered to your hotel room.
+          A professional troupe with decades of performing arts history
           <br />
-          Professional performers come to you.
+          brings authentic Japanese culture to your hotel room.
         </motion.p>
 
         {/* Badges */}

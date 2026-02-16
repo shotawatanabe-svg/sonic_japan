@@ -22,7 +22,7 @@ export default function Header() {
     >
       <div className="max-w-lg mx-auto flex items-center justify-between px-4 py-3">
         <Link href="/" className="font-heading text-xl font-bold tracking-wider text-foreground">
-          SHIDENRYU
+          Sonic Japan
         </Link>
         <Link
           href="/booking"

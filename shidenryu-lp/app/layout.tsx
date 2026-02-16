@@ -23,22 +23,23 @@ const notoSansJP = Noto_Sans_JP({
 });
 
 export const metadata: Metadata = {
-  title: "SHIDENRYU — Samurai Experience in Your Hotel Room",
+  title: "Sonic Japan — Authentic Japanese Culture Experience in Your Hotel Room",
   description:
-    "Experience authentic Japanese culture in your hotel room. Sword fighting, tea ceremony, calligraphy and more. Professional performers come to you.",
+    "Learn authentic Japanese culture from a professional troupe with decades of performing arts history. Sword fighting, tea ceremony, calligraphy and more — delivered to your hotel room.",
   keywords: [
+    "Japanese culture experience",
     "samurai experience",
-    "Japanese culture",
     "hotel activity",
     "Tokyo",
     "sword fighting",
     "tea ceremony",
     "calligraphy",
+    "Sonic Japan",
   ],
   openGraph: {
-    title: "SHIDENRYU — Samurai Experience in Your Hotel Room",
+    title: "Sonic Japan — Authentic Japanese Culture Experience in Your Hotel Room",
     description:
-      "Experience authentic Japanese culture in your hotel room. Professional performers come to you.",
+      "Learn authentic Japanese culture from professional masters. 9 unique experiences delivered to your hotel room.",
     type: "website",
   },
 };

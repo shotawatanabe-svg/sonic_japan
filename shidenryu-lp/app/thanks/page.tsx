@@ -73,11 +73,11 @@ function ThanksContent() {
     const ics = [
       "BEGIN:VCALENDAR",
       "VERSION:2.0",
-      "PRODID:-//SHIDENRYU//Booking//EN",
+      "PRODID:-//Sonic Japan//Booking//EN",
       "BEGIN:VEVENT",
       `DTSTART:${formatICS(startDate)}`,
       `DTEND:${formatICS(endDate)}`,
-      `SUMMARY:Shidenryu Experience (Tentative)`,
+      `SUMMARY:Sonic Japan Experience (Tentative)`,
       `DESCRIPTION:Booking ID: ${bookingId}\\nExperiences: ${activityNames}\\nGuests: ${guests}\\nStatus: Pending confirmation`,
       `STATUS:TENTATIVE`,
       "END:VEVENT",
@@ -88,7 +88,7 @@ function ThanksContent() {
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = `shidenryu-${date}.ics`;
+    a.download = `sonic-japan-${date}.ics`;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
@@ -115,7 +115,7 @@ function ThanksContent() {
             href="/"
             className="font-heading text-xl font-bold tracking-wider text-foreground"
           >
-            SHIDENRYU
+            Sonic Japan
           </Link>
         </div>
       </header>
