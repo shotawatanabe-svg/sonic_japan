@@ -49,7 +49,7 @@ export default function ServiceGrid({ services: initialServices }: Props) {
           </p>
         </motion.div>
 
-        <div className="grid grid-cols-1 gap-3">
+        <div className="grid grid-cols-3 gap-2">
           {services.map((service, index) => (
             <motion.button
               key={service.id}
@@ -58,36 +58,14 @@ export default function ServiceGrid({ services: initialServices }: Props) {
               viewport={{ once: true }}
               transition={{ duration: 0.4, delay: index * 0.05 }}
               onClick={() => setSelectedService(index)}
-              className="border-2 border-border rounded-xl p-4 text-left cursor-pointer transition-all hover:border-primary hover:bg-primary-light group flex items-start gap-3"
+              className="border-2 border-border rounded-xl p-3 text-center cursor-pointer transition-all hover:border-primary hover:bg-primary-light group"
             >
-              <div className="text-3xl shrink-0">{service.icon}</div>
-              <div className="flex-1 min-w-0">
-                <div className="text-sm font-bold text-foreground leading-tight">
-                  {service.name}
-                </div>
-                {service.nameJa && (
-                  <div className="text-[10px] text-foreground-subtle mt-0.5">
-                    {service.nameJa}
-                  </div>
-                )}
-                <p className="text-xs text-foreground-muted mt-1 leading-relaxed line-clamp-2">
-                  {service.description}
-                </p>
-                {service.tags.length > 0 && (
-                  <div className="flex flex-wrap gap-1 mt-1.5">
-                    {service.tags.slice(0, 2).map((tag) => (
-                      <span
-                        key={tag}
-                        className="inline-block bg-background-alt border border-border px-1.5 py-0.5 rounded text-[9px] text-foreground-subtle"
-                      >
-                        {tag}
-                      </span>
-                    ))}
-                  </div>
-                )}
+              <div className="text-3xl mb-1">{service.icon}</div>
+              <div className="text-[10px] font-semibold text-foreground leading-tight">
+                {service.name}
               </div>
-              <div className="text-[10px] text-primary shrink-0 opacity-70 group-hover:opacity-100 mt-1">
-                Details ▶
+              <div className="text-[9px] text-primary mt-1 opacity-70 group-hover:opacity-100">
+                ▶ Details
               </div>
             </motion.button>
           ))}
