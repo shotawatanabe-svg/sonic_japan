@@ -7,17 +7,17 @@
   --color-accent: #C9A96E;
   --color-accent-red: #8B2500;
   --color-accent-red-hover: #A03000;
-  --color-background: #0A0A0A;
-  --color-background-alt: #141414;
-  --color-background-card: #1A1A1A;
+  --color-background: #151515;
+  --color-background-alt: #1F1F1F;
+  --color-background-card: #252525;
   --color-foreground: #F5F0E8;
-  --color-foreground-muted: #A89F91;
-  --color-foreground-subtle: #78716C;
+  --color-foreground-muted: #D4CDC5;
+  --color-foreground-subtle: #B8B0A8;
   --color-success: #4ADE80;
   --color-error: #EF4444;
   --color-warning: #F59E0B;
-  --color-border: #2A2520;
-  --color-border-light: #221F1A;
+  --color-border: #3A3530;
+  --color-border-light: #2F2A25;
   --font-heading: var(--font-cormorant);
   --font-body: var(--font-inter);
 }

@@ -52,7 +52,7 @@ export default function ServiceDetailModal({ service, onClose }: Props) {
             </h2>
 
             <div className="h-40 rounded-lg border border-border flex items-center justify-center my-3"
-              style={{ background: "linear-gradient(135deg, #1a1510 0%, #141414 100%)" }}
+              style={{ background: "linear-gradient(135deg, #1f1a15 0%, #1f1f1f 100%)" }}
             >
               <span className="text-foreground-subtle text-sm font-bold">
                 {service.icon} Photo

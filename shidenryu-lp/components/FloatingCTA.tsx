@@ -25,7 +25,7 @@ export default function FloatingCTA() {
         transform: visible ? "translateY(0)" : "translateY(100%)",
         padding: "12px 16px",
         paddingBottom: "calc(12px + env(safe-area-inset-bottom))",
-        background: "rgba(10,10,10,0.95)",
+        background: "rgba(21,21,21,0.95)",
         backdropFilter: "blur(12px)",
         borderTop: "1px solid var(--color-border)",
       }}

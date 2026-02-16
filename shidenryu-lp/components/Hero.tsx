@@ -13,8 +13,8 @@ export default function Hero() {
       style={{
         minHeight: "100svh",
         background: `
-          linear-gradient(180deg, rgba(10,10,10,0.3) 0%, rgba(10,10,10,0.85) 100%),
-          linear-gradient(135deg, #1a1510 0%, #0a0a0a 50%, #0d0a07 100%)
+          linear-gradient(180deg, rgba(21,21,21,0.3) 0%, rgba(21,21,21,0.85) 100%),
+          linear-gradient(135deg, #1f1a15 0%, #151515 50%, #181510 100%)
         `,
       }}
     >
@@ -61,7 +61,7 @@ export default function Hero() {
           <span
             key={badge}
             className="inline-block border border-border px-3 py-1.5 rounded text-xs text-foreground"
-            style={{ background: "rgba(255,255,255,0.05)" }}
+            style={{ background: "rgba(255,255,255,0.08)" }}
           >
             {badge}
           </span>

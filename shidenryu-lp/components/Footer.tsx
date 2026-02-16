@@ -2,7 +2,7 @@ import Link from "next/link";
 
 export default function Footer() {
   return (
-    <footer className="border-t border-border" style={{ background: "#050505" }}>
+    <footer className="border-t border-border" style={{ background: "#0F0F0F" }}>
       <div className="max-w-lg mx-auto px-4 py-6 text-center">
         <p className="text-[10px] text-foreground-subtle leading-relaxed">
           Operated by Sammy Corporation
