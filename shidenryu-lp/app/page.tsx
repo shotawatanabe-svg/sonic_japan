@@ -11,6 +11,9 @@ import CTASection from "@/components/CTASection";
 import Footer from "@/components/Footer";
 import { fetchServices } from "@/lib/fetch-services";
 
+// リクエスト毎にサーバーサイドレンダリング（ビルド時の空データキャッシュを防ぐ）
+export const dynamic = "force-dynamic";
+
 export default async function Home() {
   const services = await fetchServices();
 
