@@ -12,10 +12,13 @@ export default function Hero() {
       className="relative flex flex-col justify-center items-center text-center px-6"
       style={{
         minHeight: "100svh",
-        background: `
-          linear-gradient(180deg, rgba(21,21,21,0.3) 0%, rgba(21,21,21,0.85) 100%),
-          linear-gradient(135deg, #1f1a15 0%, #151515 50%, #181510 100%)
+        backgroundImage: `
+          linear-gradient(180deg, rgba(21,21,21,0.4) 0%, rgba(21,21,21,0.85) 100%),
+          url('/images/FV_image.png')
         `,
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        backgroundRepeat: "no-repeat",
       }}
     >
       {/* Label above headline */}
