@@ -175,7 +175,7 @@ export default function StepGuestInfo({
             const v = e.target.value ? parseInt(e.target.value) : null;
             handleGuestCountChange(v);
           }}
-          className={`w-full px-3 py-2.5 border rounded-lg text-sm bg-background-alt focus:outline-none focus:ring-2 focus:ring-primary/30 ${errors.numberOfGuests ? "border-error" : "border-border"}`}
+          className={`w-full px-3 py-2.5 border rounded-lg text-sm bg-background-alt text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 ${errors.numberOfGuests ? "border-error" : "border-border"}`}
         >
           <option value="">Select…</option>
           <option value="1">1 guest</option>
@@ -206,7 +206,7 @@ export default function StepGuestInfo({
                   <select
                     value={entry.type}
                     onChange={(e) => handleTypeChange(i, e.target.value as GuestSizeEntry["type"])}
-                    className="flex-1 px-2 py-2 border border-border rounded-md text-xs bg-white focus:outline-none focus:ring-2 focus:ring-primary/30"
+                    className="flex-1 px-2 py-2 border border-border rounded-md text-xs bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-primary/30"
                   >
                     {GUEST_TYPES.map((t) => (
                       <option key={t.value} value={t.value}>{t.label}</option>
@@ -215,7 +215,7 @@ export default function StepGuestInfo({
                   <select
                     value={entry.size}
                     onChange={(e) => handleSizeChange(i, e.target.value)}
-                    className="flex-1 px-2 py-2 border border-border rounded-md text-xs bg-white focus:outline-none focus:ring-2 focus:ring-primary/30"
+                    className="flex-1 px-2 py-2 border border-border rounded-md text-xs bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-primary/30"
                   >
                     {sizes.map((s) => (
                       <option key={s.value} value={s.value}>{s.label}</option>
