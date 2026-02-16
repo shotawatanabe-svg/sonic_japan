@@ -27,7 +27,7 @@ const infoCards = [
 
 export default function Info() {
   return (
-    <section className="border-t border-border-light bg-background">
+    <section className="border-t border-border bg-background">
       <div className="max-w-lg mx-auto px-4 py-10">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
@@ -35,7 +35,7 @@ export default function Info() {
           viewport={{ once: true, margin: "-50px" }}
           transition={{ duration: 0.6 }}
         >
-          <span className="inline-block bg-blue-800 text-white text-[10px] font-bold px-2 py-0.5 rounded mb-3 tracking-wider uppercase">
+          <span className="inline-block text-accent text-[10px] font-bold tracking-[0.15em] uppercase mb-3">
             Info
           </span>
         </motion.div>
@@ -48,7 +48,7 @@ export default function Info() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.4, delay: index * 0.1 }}
-              className="flex items-center gap-3 p-3 border border-border rounded-lg"
+              className="flex items-center gap-3 p-3 border border-border rounded-lg bg-background-card"
             >
               <div className="text-3xl shrink-0">{card.icon}</div>
               <div>

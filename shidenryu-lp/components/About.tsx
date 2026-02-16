@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 
 export default function About() {
   return (
-    <section className="border-t border-border-light bg-background">
+    <section className="border-t border-border bg-background-alt">
       <div className="max-w-lg mx-auto px-4 py-10">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
@@ -12,10 +12,10 @@ export default function About() {
           viewport={{ once: true, margin: "-50px" }}
           transition={{ duration: 0.6 }}
         >
-          <span className="inline-block bg-primary text-white text-[10px] font-bold px-2 py-0.5 rounded mb-3 tracking-wider uppercase">
+          <span className="inline-block text-accent text-[10px] font-bold tracking-[0.15em] uppercase mb-3">
             About
           </span>
-          <h2 className="font-heading text-2xl font-bold mb-3 text-foreground">
+          <h2 className="font-heading text-2xl font-bold mb-3 text-foreground tracking-wide">
             Who Is Sonic Japan?
           </h2>
           <p className="text-foreground-muted text-sm leading-relaxed mb-4">

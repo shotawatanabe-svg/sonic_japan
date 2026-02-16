@@ -42,7 +42,7 @@ const steps = [
 
 export default function SessionFlow() {
   return (
-    <section className="border-t border-border-light bg-background">
+    <section className="border-t border-border bg-background-alt">
       <div className="max-w-lg mx-auto px-4 py-10">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
@@ -50,15 +50,18 @@ export default function SessionFlow() {
           viewport={{ once: true, margin: "-50px" }}
           transition={{ duration: 0.6 }}
         >
-          <span className="inline-block bg-blue-800 text-white text-[10px] font-bold px-2 py-0.5 rounded mb-3 tracking-wider uppercase">
+          <span className="inline-block text-accent text-[10px] font-bold tracking-[0.15em] uppercase mb-3">
             Session Flow
           </span>
-          <h2 className="font-heading text-2xl font-bold mb-6 text-foreground">
+          <h2 className="font-heading text-2xl font-bold mb-6 text-foreground tracking-wide">
             Your 90-Minute Journey
           </h2>
         </motion.div>
 
-        <div className="space-y-0">
+        <div className="relative pl-5">
+          {/* Vertical gold line */}
+          <div className="absolute left-[7px] top-2 bottom-2 w-px bg-accent/30" />
+
           {steps.map((step, index) => (
             <motion.div
               key={step.time}
@@ -66,22 +69,19 @@ export default function SessionFlow() {
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.4, delay: index * 0.1 }}
-              className={`flex gap-3 py-3 ${
-                !step.isLast ? "border-b border-border-light" : ""
-              }`}
+              className="relative flex gap-4 pb-6 last:pb-0"
             >
-              <div
-                className={`min-w-[40px] h-7 rounded-full ${
-                  step.isLast ? "bg-gray-500" : "bg-primary"
-                } text-white text-[10px] font-bold flex items-center justify-center shrink-0`}
-              >
+              {/* Gold dot */}
+              <div className="absolute -left-5 top-1 w-3.5 h-3.5 rounded-full border-2 border-accent bg-background-alt shrink-0 z-10" />
+              {/* Time badge */}
+              <div className="text-accent text-xs font-bold min-w-[40px] pt-0.5">
                 {step.time}
               </div>
               <div>
                 <h3 className="text-sm font-bold text-foreground">
                   {step.title}
                 </h3>
-                <p className="text-xs text-foreground-muted leading-relaxed">
+                <p className="text-xs text-foreground-muted leading-relaxed mt-0.5">
                   {step.description}
                 </p>
               </div>

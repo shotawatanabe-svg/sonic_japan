@@ -16,7 +16,7 @@ export default function AvailabilityCalendar() {
   const today = new Date();
 
   const [viewYear, setViewYear] = useState(today.getFullYear());
-  const [viewMonth, setViewMonth] = useState(today.getMonth()); // 0-indexed
+  const [viewMonth, setViewMonth] = useState(today.getMonth());
   const [data, setData] = useState<MonthData>({});
   const [loading, setLoading] = useState(true);
 
@@ -81,7 +81,7 @@ export default function AvailabilityCalendar() {
   };
 
   return (
-    <section className="border-t border-border-light bg-background">
+    <section className="border-t border-border bg-background-alt">
       <div className="max-w-lg mx-auto px-4 py-10">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
@@ -89,10 +89,10 @@ export default function AvailabilityCalendar() {
           viewport={{ once: true, margin: "-50px" }}
           transition={{ duration: 0.6 }}
         >
-          <span className="inline-block bg-orange-700 text-white text-[10px] font-bold px-2 py-0.5 rounded mb-3 tracking-wider uppercase">
+          <span className="inline-block text-accent text-[10px] font-bold tracking-[0.15em] uppercase mb-3">
             Availability
           </span>
-          <h2 className="font-heading text-2xl font-bold mb-1 text-foreground">
+          <h2 className="font-heading text-2xl font-bold mb-1 text-foreground tracking-wide">
             Check Availability
           </h2>
           <p className="text-foreground-muted text-xs mb-4">
@@ -100,16 +100,16 @@ export default function AvailabilityCalendar() {
           </p>
         </motion.div>
 
-        <div className="border border-border rounded-lg overflow-hidden">
+        <div className="border border-border rounded-lg overflow-hidden bg-background-card">
           {/* Month navigation */}
-          <div className="bg-background-alt px-3 py-2.5 flex items-center justify-between">
+          <div className="px-3 py-2.5 flex items-center justify-between border-b border-border">
             <button
               onClick={prevMonth}
               disabled={!canGoPrev}
               className={`text-xs px-2 py-1 rounded transition-colors ${
                 canGoPrev
-                  ? "text-foreground-muted hover:bg-gray-200"
-                  : "text-gray-300 cursor-default"
+                  ? "text-accent hover:bg-background-alt"
+                  : "text-foreground-subtle cursor-default"
               }`}
             >
               ◀ Prev
@@ -117,7 +117,7 @@ export default function AvailabilityCalendar() {
             <span className="text-sm font-bold text-foreground">{monthLabel}</span>
             <button
               onClick={nextMonth}
-              className="text-xs text-foreground-muted px-2 py-1 rounded hover:bg-gray-200 transition-colors"
+              className="text-xs text-accent px-2 py-1 rounded hover:bg-background-alt transition-colors"
             >
               Next ▶
             </button>
@@ -138,7 +138,7 @@ export default function AvailabilityCalendar() {
           {/* Loading overlay */}
           {loading ? (
             <div className="flex items-center justify-center py-16">
-              <div className="animate-spin rounded-full h-6 w-6 border-2 border-primary border-t-transparent" />
+              <div className="animate-spin rounded-full h-6 w-6 border-2 border-accent border-t-transparent" />
             </div>
           ) : (
             <>
@@ -165,27 +165,29 @@ export default function AvailabilityCalendar() {
                       disabled={disabled}
                       className={`text-center py-1.5 text-xs rounded-md transition-all ${
                         past
-                          ? "text-gray-300 cursor-default line-through"
+                          ? "text-foreground-subtle/40 cursor-default line-through"
                           : isFull
-                          ? "text-gray-300 bg-gray-50 cursor-default"
+                          ? "text-foreground-subtle/40 cursor-default"
+                          : isAvailable
+                          ? "text-foreground border border-accent/50 hover:bg-accent hover:text-background cursor-pointer font-semibold"
                           : isPartial
-                          ? "text-amber-500 hover:bg-amber-50 cursor-pointer font-semibold"
-                          : "text-foreground hover:bg-green-50 cursor-pointer"
+                          ? "text-amber-400 border border-amber-500/30 hover:bg-amber-500/10 cursor-pointer font-semibold"
+                          : "text-foreground hover:bg-background-alt cursor-pointer"
                       }`}
                     >
                       <span>{day}</span>
                       {!past && isAvailable && (
-                        <span className="block text-[9px] text-green-500 leading-none mt-0.5">
+                        <span className="block text-[9px] text-accent leading-none mt-0.5">
                           ○
                         </span>
                       )}
                       {!past && isPartial && (
-                        <span className="block text-[9px] text-amber-500 leading-none mt-0.5">
+                        <span className="block text-[9px] text-amber-400 leading-none mt-0.5">
                           ▲
                         </span>
                       )}
                       {!past && isFull && (
-                        <span className="block text-[8px] text-gray-400 leading-none mt-0.5">
+                        <span className="block text-[8px] text-foreground-subtle/50 leading-none mt-0.5">
                           Full
                         </span>
                       )}
@@ -196,15 +198,15 @@ export default function AvailabilityCalendar() {
 
               {/* Legend */}
               <div className="flex items-center justify-center gap-3 pb-2.5 flex-wrap">
-                <span className="flex items-center gap-1 text-[10px] text-green-600">
+                <span className="flex items-center gap-1 text-[10px] text-accent">
                   <span className="text-[10px]">○</span>
                   Available
                 </span>
-                <span className="flex items-center gap-1 text-[10px] text-amber-500">
+                <span className="flex items-center gap-1 text-[10px] text-amber-400">
                   <span className="text-[10px]">▲</span>
                   Some Booked
                 </span>
-                <span className="flex items-center gap-1 text-[10px] text-gray-400">
+                <span className="flex items-center gap-1 text-[10px] text-foreground-subtle">
                   <span className="text-[8px]">Full</span>
                   Unavailable
                 </span>

@@ -1,80 +1,88 @@
 "use client";
 
+import { useRef } from "react";
 import { motion } from "framer-motion";
 import Link from "next/link";
 
 export default function Hero() {
+  const ctaRef = useRef<HTMLDivElement>(null);
+
   return (
-    <section className="relative bg-background">
-      <div className="max-w-lg mx-auto px-4 pt-4 pb-8">
-        {/* Hero Image Placeholder */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-          className="relative h-52 sm:h-64 bg-gradient-to-br from-gray-100 to-gray-200 rounded-xl border-2 border-dashed border-gray-300 flex items-center justify-center mb-6 overflow-hidden"
-        >
-          <div className="text-center text-gray-400">
-            <span className="text-4xl block mb-2">⚔️</span>
-            <span className="text-sm font-bold">Samurai Performance Photo / Video</span>
-          </div>
-        </motion.div>
+    <section
+      className="relative flex flex-col justify-center items-center text-center px-6"
+      style={{
+        minHeight: "100svh",
+        background: `
+          linear-gradient(180deg, rgba(10,10,10,0.3) 0%, rgba(10,10,10,0.85) 100%),
+          linear-gradient(135deg, #1a1510 0%, #0a0a0a 50%, #0d0a07 100%)
+        `,
+      }}
+    >
+      {/* Label above headline */}
+      <motion.span
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6 }}
+        className="text-accent text-xs font-bold tracking-[0.2em] uppercase mb-6"
+      >
+        Authentic Japanese Culture Experience
+      </motion.span>
 
-        {/* Headline */}
-        <motion.h1
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.2 }}
-          className="font-heading text-3xl sm:text-4xl font-bold leading-tight mb-3 text-foreground"
-        >
-          Learn from the
-          <br />
-          Masters of Japan.
-        </motion.h1>
+      {/* Headline */}
+      <motion.h1
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6, delay: 0.15 }}
+        className="font-heading text-5xl sm:text-6xl font-bold leading-[1.1] mb-5 text-foreground tracking-wide"
+      >
+        Learn the <span className="text-accent">Art</span>.
+        <br />
+        From the <span className="text-accent">Artists</span>.
+      </motion.h1>
 
-        {/* Subtext */}
-        <motion.p
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.3 }}
-          className="text-foreground-muted text-sm leading-relaxed mb-4"
-        >
-          A professional troupe with decades of performing arts history
-          <br />
-          brings authentic Japanese culture to your hotel room.
-        </motion.p>
+      {/* Subtext */}
+      <motion.p
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6, delay: 0.3 }}
+        className="text-foreground-muted text-base sm:text-lg mb-6 max-w-md"
+      >
+        Professional masters of Japanese culture, in the comfort of your hotel room.
+      </motion.p>
 
-        {/* Badges */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.4 }}
-          className="flex flex-wrap gap-2 mb-6"
-        >
-          {["90 min", "¥40,000", "Beginner OK", "16:00–24:00"].map((badge) => (
-            <span
-              key={badge}
-              className="inline-block bg-background-alt border border-border px-3 py-1 rounded-full text-xs text-foreground-muted"
-            >
-              {badge}
-            </span>
-          ))}
-        </motion.div>
-
-        {/* CTA Button */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.5 }}
-        >
-          <Link
-            href="/booking"
-            className="block w-full bg-primary text-white text-center font-bold py-4 rounded-lg hover:opacity-85 transition-opacity text-base"
+      {/* Badges */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6, delay: 0.4 }}
+        className="flex flex-wrap justify-center gap-2 mb-8"
+      >
+        {["90 min", "¥40,000", "Beginner OK", "16:00–24:00"].map((badge) => (
+          <span
+            key={badge}
+            className="inline-block border border-border px-3 py-1.5 rounded text-xs text-foreground"
+            style={{ background: "rgba(255,255,255,0.05)" }}
           >
-            Book Your Experience ▼
-          </Link>
-        </motion.div>
-      </div>
+            {badge}
+          </span>
+        ))}
+      </motion.div>
+
+      {/* CTA Button */}
+      <motion.div
+        ref={ctaRef}
+        id="hero-cta"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6, delay: 0.5 }}
+      >
+        <Link
+          href="/booking"
+          className="inline-block w-full sm:w-auto bg-accent-red text-white text-center font-semibold py-4 px-12 rounded-[4px] text-base tracking-wide transition-all hover:bg-accent-red-hover hover:-translate-y-0.5"
+        >
+          Book Your Experience →
+        </Link>
+      </motion.div>
     </section>
   );
 }

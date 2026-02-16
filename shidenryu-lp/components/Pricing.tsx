@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 
 export default function Pricing() {
   return (
-    <section className="border-t border-border-light bg-background">
+    <section className="border-t border-border bg-background">
       <div className="max-w-lg mx-auto px-4 py-10">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
@@ -12,20 +12,23 @@ export default function Pricing() {
           viewport={{ once: true, margin: "-50px" }}
           transition={{ duration: 0.6 }}
         >
-          <span className="inline-block bg-blue-800 text-white text-[10px] font-bold px-2 py-0.5 rounded mb-3 tracking-wider uppercase">
+          <span className="inline-block text-accent text-[10px] font-bold tracking-[0.15em] uppercase mb-3">
             Pricing
           </span>
-          <h2 className="font-heading text-2xl font-bold mb-2 text-foreground">
+          <h2 className="font-heading text-2xl font-bold mb-2 text-foreground tracking-wide">
             Pricing
           </h2>
 
           {/* Price */}
-          <div className="text-3xl font-bold text-primary my-2">
+          <div className="text-3xl font-bold text-accent my-2">
             ¥40,000{" "}
             <span className="text-sm text-foreground-muted font-normal">
               / session (tax included)
             </span>
           </div>
+          <p className="text-foreground-subtle text-xs mb-1">
+            ¥10,000 per person for 4 guests
+          </p>
           <p className="text-foreground-muted text-sm mb-6">
             Up to 4 guests per session. Fixed price regardless of group size.
           </p>
@@ -46,7 +49,7 @@ export default function Pricing() {
                   key={item}
                   className="text-sm text-foreground-muted flex items-start gap-2"
                 >
-                  <span className="text-success">✓</span>
+                  <span className="text-accent">✓</span>
                   {item}
                 </li>
               ))}
@@ -54,7 +57,7 @@ export default function Pricing() {
           </div>
 
           {/* Payment Note */}
-          <div className="bg-background-alt border border-border rounded-lg p-4">
+          <div className="bg-background-card border border-border rounded-lg p-4">
             <h3 className="text-xs font-bold text-foreground mb-1.5">
               💳 Payment — On-site, Day of Experience
             </h3>
@@ -73,7 +76,7 @@ export default function Pricing() {
               ].map((method) => (
                 <span
                   key={method}
-                  className="px-2 py-1 border border-border rounded text-[10px] font-bold text-foreground-muted bg-white"
+                  className="px-2 py-1 border border-border rounded text-[10px] font-bold text-foreground-muted bg-background-alt"
                 >
                   {method}
                 </span>

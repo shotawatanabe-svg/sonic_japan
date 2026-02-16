@@ -16,17 +16,20 @@ export default function Header() {
 
   return (
     <header
-      className={`sticky top-0 z-50 transition-shadow duration-300 bg-white ${
-        scrolled ? "shadow-md" : "border-b border-border"
-      }`}
+      className="sticky top-0 z-50 transition-all duration-300"
+      style={{
+        background: scrolled ? "rgba(10,10,10,0.95)" : "transparent",
+        backdropFilter: scrolled ? "blur(12px)" : "none",
+        borderBottom: scrolled ? "1px solid var(--color-border)" : "1px solid transparent",
+      }}
     >
       <div className="max-w-lg mx-auto flex items-center justify-between px-4 py-3">
-        <Link href="/" className="font-heading text-xl font-bold tracking-wider text-foreground">
+        <Link href="/" className="font-heading text-xl font-bold tracking-wider text-accent">
           Sonic Japan
         </Link>
         <Link
           href="/booking"
-          className="bg-primary text-white text-xs font-bold px-4 py-2 rounded transition-opacity hover:opacity-85"
+          className="border border-accent text-accent text-xs font-bold px-4 py-2 rounded-[4px] transition-all hover:bg-accent hover:text-background"
         >
           Book Now
         </Link>

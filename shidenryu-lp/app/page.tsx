@@ -9,6 +9,7 @@ import Info from "@/components/Info";
 import FAQ from "@/components/FAQ";
 import CTASection from "@/components/CTASection";
 import Footer from "@/components/Footer";
+import FloatingCTA from "@/components/FloatingCTA";
 import { fetchServices } from "@/lib/fetch-services";
 
 // リクエスト毎にサーバーサイドレンダリング（ビルド時の空データキャッシュを防ぐ）
@@ -30,6 +31,7 @@ export default async function Home() {
       <FAQ />
       <CTASection />
       <Footer />
+      <FloatingCTA />
     </main>
   );
 }

@@ -40,7 +40,7 @@ export default function FAQ() {
   const [openIndex, setOpenIndex] = useState<number | null>(null);
 
   return (
-    <section className="border-t border-border-light bg-background">
+    <section className="border-t border-border bg-background-alt">
       <div className="max-w-lg mx-auto px-4 py-10">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
@@ -48,15 +48,15 @@ export default function FAQ() {
           viewport={{ once: true, margin: "-50px" }}
           transition={{ duration: 0.6 }}
         >
-          <span className="inline-block bg-blue-800 text-white text-[10px] font-bold px-2 py-0.5 rounded mb-3 tracking-wider uppercase">
+          <span className="inline-block text-accent text-[10px] font-bold tracking-[0.15em] uppercase mb-3">
             FAQ
           </span>
-          <h2 className="font-heading text-2xl font-bold mb-4 text-foreground">
+          <h2 className="font-heading text-2xl font-bold mb-4 text-foreground tracking-wide">
             Frequently Asked Questions
           </h2>
         </motion.div>
 
-        <div className="divide-y divide-border-light">
+        <div className="divide-y divide-border">
           {faqItems.map((item, index) => (
             <motion.div
               key={index}
@@ -73,12 +73,12 @@ export default function FAQ() {
                 className="w-full text-left flex items-center justify-between gap-2"
               >
                 <span className="text-sm font-bold text-foreground">
-                  Q: {item.question}
+                  <span className="text-accent">Q:</span> {item.question}
                 </span>
                 <motion.span
                   animate={{ rotate: openIndex === index ? 180 : 0 }}
                   transition={{ duration: 0.2 }}
-                  className="text-foreground-muted text-sm shrink-0"
+                  className="text-accent text-sm shrink-0"
                 >
                   ▼
                 </motion.span>

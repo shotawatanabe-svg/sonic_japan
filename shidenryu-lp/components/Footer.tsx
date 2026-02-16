@@ -2,7 +2,7 @@ import Link from "next/link";
 
 export default function Footer() {
   return (
-    <footer className="bg-background-alt border-t border-border">
+    <footer className="border-t border-border" style={{ background: "#050505" }}>
       <div className="max-w-lg mx-auto px-4 py-6 text-center">
         <p className="text-[10px] text-foreground-subtle leading-relaxed">
           Operated by Sammy Corporation
@@ -11,7 +11,7 @@ export default function Footer() {
           <Link
             href="/terms"
             target="_blank"
-            className="hover:text-foreground transition-colors"
+            className="hover:text-accent transition-colors"
           >
             Terms of Service
           </Link>
@@ -19,12 +19,12 @@ export default function Footer() {
           <Link
             href="/privacy"
             target="_blank"
-            className="hover:text-foreground transition-colors"
+            className="hover:text-accent transition-colors"
           >
             Privacy Policy
           </Link>
           <span>|</span>
-          <a href="#" className="hover:text-foreground transition-colors">
+          <a href="#" className="hover:text-accent transition-colors">
             Legal Notice
           </a>
         </div>
@@ -33,7 +33,7 @@ export default function Footer() {
             href="https://instagram.com"
             target="_blank"
             rel="noopener noreferrer"
-            className="hover:text-foreground transition-colors"
+            className="hover:text-accent transition-colors"
           >
             Instagram
           </a>
@@ -42,7 +42,7 @@ export default function Footer() {
             href="https://youtube.com"
             target="_blank"
             rel="noopener noreferrer"
-            className="hover:text-foreground transition-colors"
+            className="hover:text-accent transition-colors"
           >
             YouTube
           </a>
@@ -50,7 +50,7 @@ export default function Footer() {
         <p className="mt-2 text-[10px] text-foreground-subtle">
           <a
             href="mailto:support@example.com"
-            className="hover:text-foreground transition-colors"
+            className="hover:text-accent transition-colors"
           >
             support@example.com
           </a>
