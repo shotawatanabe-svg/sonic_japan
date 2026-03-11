@@ -29,8 +29,14 @@ export default function Pricing() {
           <p className="text-foreground-subtle text-xs mb-1">
             ¥10,000 per person for 4 guests
           </p>
+          <p className="text-foreground-muted text-sm mb-2">
+            Up to 4 guests can participate per session.
+          </p>
+          <p className="text-foreground-muted text-sm mb-2">
+            Larger groups are welcome — extra guests can watch and enjoy!
+          </p>
           <p className="text-foreground-muted text-sm mb-4">
-            Up to 4 guests per session. Fixed price regardless of group size.
+            Fixed price regardless of group size.
           </p>
 
           {/* Key info */}

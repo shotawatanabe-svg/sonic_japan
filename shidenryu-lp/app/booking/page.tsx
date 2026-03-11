@@ -120,9 +120,13 @@ function BookingContent() {
     setState((prev) => ({ ...prev, activities: newActivities }));
   };
 
+  const isFamilyPlan = state.activities.some(
+    (id) => services.find((s) => s.id === id)?.category === "family"
+  );
+
   // Step 4: Guest data update
   const handleGuestChange = (
-    data: Partial<Pick<BookingState, "nickname" | "email" | "numberOfGuests" | "guestSizeEntries" | "roomNumber" | "specialRequests" | "agreedToPrivacy">>
+    data: Partial<Pick<BookingState, "nickname" | "email" | "numberOfGuests" | "guestSizeEntries" | "roomNumber" | "specialRequests">>
   ) => {
     setState((prev) => ({ ...prev, ...data }));
   };
@@ -148,10 +152,14 @@ function BookingContent() {
       .map((g) => `${g.type}-${g.size}`)
       .join(",");
 
+    const activities = state.activities.includes("family_plan")
+      ? ["family_plan", "", ""]
+      : [state.activities[0] || "", state.activities[1] || "", state.activities[2] || ""];
+
     const result = await submitBooking({
       date: state.date!,
       timeSlot: state.timeSlot!,
-      activities: state.activities,
+      activities,
       nickname: state.nickname,
       email: state.email,
       numberOfGuests: state.numberOfGuests!,
@@ -302,12 +310,12 @@ function BookingContent() {
                     guestSizeEntries: state.guestSizeEntries,
                     roomNumber: state.roomNumber,
                     specialRequests: state.specialRequests,
-                    agreedToPrivacy: state.agreedToPrivacy,
                   }}
                   onChange={handleGuestChange}
                   onNext={() => goToStep(5, 1)}
                   dateLabel={dateLabel}
                   timeLabel={timeLabel}
+                  isFamilyPlan={isFamilyPlan}
                 />
                 <BackButton onClick={() => goToStep(3, -1)} />
               </div>
@@ -326,6 +334,9 @@ function BookingContent() {
                   onChangeStep={goToStep}
                   onToggleTerms={(agreed) =>
                     setState((prev) => ({ ...prev, agreedToTerms: agreed }))
+                  }
+                  onTogglePrivacy={(agreed) =>
+                    setState((prev) => ({ ...prev, agreedToPrivacy: agreed }))
                   }
                   onSubmit={handleSubmit}
                 />

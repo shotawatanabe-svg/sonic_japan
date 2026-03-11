@@ -28,36 +28,6 @@ export default function ServiceGrid({ services: initialServices }: Props) {
       .catch(() => {});
   }, [initialServices]);
 
-  const regularServices = services.filter((s) => s.category === "regular");
-  const souvenirServices = services.filter((s) => s.category === "souvenir");
-  const familyServices = services.filter((s) => s.category === "family");
-
-  const getGlobalIndex = (service: Service) =>
-    services.findIndex((s) => s.id === service.id);
-
-  const renderCard = (service: Service, index: number) => (
-    <motion.button
-      key={service.id}
-      initial={{ opacity: 0, y: 20 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
-      transition={{ duration: 0.4, delay: index * 0.05 }}
-      onClick={() => setSelectedService(getGlobalIndex(service))}
-      className="bg-background-card border border-border rounded-xl p-3 text-center cursor-pointer transition-all hover:border-accent hover:-translate-y-0.5 group"
-    >
-      <div className="text-3xl mb-1">{service.icon}</div>
-      <div className="text-[10px] font-semibold text-foreground leading-tight">
-        {service.name}
-      </div>
-      <div className="text-[9px] text-foreground-muted mt-0.5">
-        {service.duration}
-      </div>
-      <div className="text-[9px] text-accent mt-1 opacity-70 group-hover:opacity-100">
-        ▶ Details
-      </div>
-    </motion.button>
-  );
-
   return (
     <section className="border-t border-border bg-background">
       <div className="max-w-lg mx-auto px-4 py-10">
@@ -78,44 +48,17 @@ export default function ServiceGrid({ services: initialServices }: Props) {
           </p>
         </motion.div>
 
-        {/* Regular experiences */}
         <div className="grid grid-cols-3 gap-2">
-          {regularServices.map((s, i) => renderCard(s, i))}
-        </div>
-
-        {/* Souvenir section */}
-        {souvenirServices.length > 0 && (
-          <div className="mt-6">
-            <p className="text-xs font-bold text-accent mb-0.5">
-              Souvenir Craft — Take Home a Handmade Memory
-            </p>
-            <p className="text-[10px] text-foreground-muted mb-2">
-              Choose up to 1 souvenir craft
-            </p>
-            <div className="grid grid-cols-3 gap-2">
-              {souvenirServices.map((s, i) => renderCard(s, i))}
-            </div>
-          </div>
-        )}
-
-        {/* Family Plan section */}
-        {familyServices.length > 0 && (
-          <div className="mt-6">
-            <p className="text-xs font-bold text-amber-500 mb-0.5">
-              ★ Family Plan — Special Package
-            </p>
-            <p className="text-[10px] text-foreground-muted mb-2">
-              All ages welcome · No participant limit · Counts as all 3 experiences
-            </p>
-            {familyServices.map((service, i) => (
+          {services.map((service, index) =>
+            service.category === "family" ? (
               <motion.button
                 key={service.id}
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                transition={{ duration: 0.4, delay: i * 0.05 }}
-                onClick={() => setSelectedService(getGlobalIndex(service))}
-                className="w-full bg-background-card border border-amber-500/40 rounded-xl p-4 text-center cursor-pointer transition-all hover:border-amber-500 hover:-translate-y-0.5 group"
+                transition={{ duration: 0.4, delay: index * 0.05 }}
+                onClick={() => setSelectedService(index)}
+                className="col-span-3 bg-background-card border border-amber-500/40 rounded-xl p-4 text-center cursor-pointer transition-all hover:border-amber-500 hover:-translate-y-0.5 group"
               >
                 <div className="text-3xl mb-1">{service.icon}</div>
                 <div className="text-sm font-semibold text-foreground">
@@ -124,13 +67,46 @@ export default function ServiceGrid({ services: initialServices }: Props) {
                 <div className="text-[10px] text-foreground-muted mt-0.5">
                   {service.duration}
                 </div>
+                <div className="text-[9px] text-amber-500 font-bold mt-1">
+                  ★ All ages · No limit · Uses all 3 slots
+                </div>
                 <div className="text-[9px] text-accent mt-1 opacity-70 group-hover:opacity-100">
                   ▶ Details
                 </div>
               </motion.button>
-            ))}
-          </div>
-        )}
+            ) : (
+              <motion.button
+                key={service.id}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.4, delay: index * 0.05 }}
+                onClick={() => setSelectedService(index)}
+                className={`bg-background-card border rounded-xl p-3 text-center cursor-pointer transition-all hover:-translate-y-0.5 group ${
+                  service.category === "souvenir"
+                    ? "border-pink-400/30 hover:border-pink-400"
+                    : "border-border hover:border-accent"
+                }`}
+              >
+                {service.category === "souvenir" && (
+                  <span className="inline-block text-[8px] text-pink-400 font-bold mb-0.5">
+                    Souvenir
+                  </span>
+                )}
+                <div className="text-3xl mb-1">{service.icon}</div>
+                <div className="text-[10px] font-semibold text-foreground leading-tight">
+                  {service.name}
+                </div>
+                <div className="text-[9px] text-foreground-muted mt-0.5">
+                  {service.duration}
+                </div>
+                <div className="text-[9px] text-accent mt-1 opacity-70 group-hover:opacity-100">
+                  ▶ Details
+                </div>
+              </motion.button>
+            )
+          )}
+        </div>
       </div>
 
       {selectedService !== null && (

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import type { GuestSizeEntry } from "@/lib/booking-types";
 
 const ADULT_SIZES = [
@@ -38,7 +38,6 @@ interface GuestData {
   guestSizeEntries: GuestSizeEntry[];
   roomNumber: string;
   specialRequests: string;
-  agreedToPrivacy: boolean;
 }
 
 interface Props {
@@ -47,6 +46,7 @@ interface Props {
   onNext: () => void;
   dateLabel: string;
   timeLabel: string;
+  isFamilyPlan: boolean;
 }
 
 export default function StepGuestInfo({
@@ -55,8 +55,19 @@ export default function StepGuestInfo({
   onNext,
   dateLabel,
   timeLabel,
+  isFamilyPlan,
 }: Props) {
   const [errors, setErrors] = useState<Record<string, string>>({});
+
+  useEffect(() => {
+    if (!isFamilyPlan && data.numberOfGuests && data.numberOfGuests > 4) {
+      const capped = 4;
+      onChange({
+        numberOfGuests: capped,
+        guestSizeEntries: data.guestSizeEntries.slice(0, capped),
+      });
+    }
+  }, [isFamilyPlan]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const validate = (): boolean => {
     const newErrors: Record<string, string> = {};
@@ -66,14 +77,15 @@ export default function StepGuestInfo({
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email)) {
       newErrors.email = "Please enter a valid email";
     }
-    if (!data.numberOfGuests || data.numberOfGuests < 1 || data.numberOfGuests > 4) {
-      newErrors.numberOfGuests = "Number of guests must be 1–4";
+    if (!data.numberOfGuests || data.numberOfGuests < 1) {
+      newErrors.numberOfGuests = "Number of guests is required";
+    } else if (!isFamilyPlan && data.numberOfGuests > 4) {
+      newErrors.numberOfGuests = "Max 4 guests for this experience";
     }
     if (data.numberOfGuests && data.guestSizeEntries.length < data.numberOfGuests) {
       newErrors.guestSizes = "Please select type and size for all guests";
     }
     if (!data.roomNumber.trim()) newErrors.roomNumber = "Room number is required";
-    if (!data.agreedToPrivacy) newErrors.agreedToPrivacy = "Please agree to the use of personal information";
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -86,7 +98,6 @@ export default function StepGuestInfo({
     if (errors[field]) setErrors((prev) => ({ ...prev, [field]: "" }));
   };
 
-  // ゲスト数変更時にguestSizeEntriesを同期
   const handleGuestCountChange = (count: number | null) => {
     onChange({ numberOfGuests: count });
     clearError("numberOfGuests");
@@ -96,18 +107,15 @@ export default function StepGuestInfo({
     }
     const current = [...data.guestSizeEntries];
     if (count > current.length) {
-      // 増やす
       for (let i = current.length; i < count; i++) {
         current.push({ type: "Man", size: "M" });
       }
     } else {
-      // 減らす
       current.splice(count);
     }
     onChange({ guestSizeEntries: current });
   };
 
-  // ゲストのType変更
   const handleTypeChange = (index: number, type: GuestSizeEntry["type"]) => {
     const entries = [...data.guestSizeEntries];
     const currentSize = entries[index].size;
@@ -121,7 +129,6 @@ export default function StepGuestInfo({
     clearError("guestSizes");
   };
 
-  // ゲストのSize変更
   const handleSizeChange = (index: number, size: string) => {
     const entries = [...data.guestSizeEntries];
     entries[index] = { ...entries[index], size };
@@ -169,23 +176,47 @@ export default function StepGuestInfo({
       {/* Number of guests */}
       <div className="mb-3">
         <label className="block text-[11px] font-bold text-foreground-muted mb-1">
-          Number of Guests <span className="text-error">*</span>
+          Number of Guests {!isFamilyPlan && "(max 4)"} <span className="text-error">*</span>
         </label>
-        <select
-          value={data.numberOfGuests ?? ""}
-          onChange={(e) => {
-            const v = e.target.value ? parseInt(e.target.value) : null;
-            handleGuestCountChange(v);
-          }}
-          className={`w-full px-3 py-2.5 border rounded-lg text-sm bg-background-alt text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 ${errors.numberOfGuests ? "border-error" : "border-border"}`}
-        >
-          <option value="">Select…</option>
-          <option value="1">1 guest</option>
-          <option value="2">2 guests</option>
-          <option value="3">3 guests</option>
-          <option value="4">4 guests</option>
-        </select>
+        {isFamilyPlan ? (
+          <input
+            type="number"
+            min={1}
+            value={data.numberOfGuests ?? ""}
+            onChange={(e) => {
+              const v = e.target.value ? Math.max(1, parseInt(e.target.value)) : null;
+              handleGuestCountChange(v);
+            }}
+            placeholder="Enter number of guests"
+            className={`w-full px-3 py-2.5 border rounded-lg text-sm bg-background-alt text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 ${errors.numberOfGuests ? "border-error" : "border-border"}`}
+          />
+        ) : (
+          <select
+            value={data.numberOfGuests ?? ""}
+            onChange={(e) => {
+              const v = e.target.value ? parseInt(e.target.value) : null;
+              handleGuestCountChange(v);
+            }}
+            className={`w-full px-3 py-2.5 border rounded-lg text-sm bg-background-alt text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 ${errors.numberOfGuests ? "border-error" : "border-border"}`}
+          >
+            <option value="">Select…</option>
+            <option value="1">1 guest</option>
+            <option value="2">2 guests</option>
+            <option value="3">3 guests</option>
+            <option value="4">4 guests</option>
+          </select>
+        )}
         {errors.numberOfGuests && <p className="text-[10px] text-error mt-1">{errors.numberOfGuests}</p>}
+
+        {isFamilyPlan ? (
+          <p className="text-sm text-green-700 bg-green-50 p-2 rounded mt-2">
+            Family Plan: No participant limit. All ages welcome!
+          </p>
+        ) : (
+          <p className="text-sm text-amber-700 bg-amber-50 p-2 rounded mt-2">
+            Up to 4 guests can participate in the experience. Additional guests are welcome to watch.
+          </p>
+        )}
       </div>
 
       {/* Guest Type + Size selectors */}
@@ -258,39 +289,6 @@ export default function StepGuestInfo({
           rows={3}
           className="w-full px-3 py-2.5 border border-border rounded-lg text-sm bg-background-alt resize-none focus:outline-none focus:ring-2 focus:ring-primary/30"
         />
-      </div>
-
-      {/* Personal information consent */}
-      <div className={`mb-4 p-4 rounded-lg border ${errors.agreedToPrivacy ? "border-error bg-red-50" : "border-border bg-gray-50"}`}>
-        <label className="flex items-start gap-3 cursor-pointer">
-          <input
-            type="checkbox"
-            checked={data.agreedToPrivacy}
-            onChange={(e) => {
-              onChange({ agreedToPrivacy: e.target.checked });
-              clearError("agreedToPrivacy");
-            }}
-            className="mt-1 w-5 h-5 shrink-0 rounded border-gray-300 accent-primary"
-          />
-          <div className="text-sm">
-            <p className="text-gray-700">
-              I agree to the use of my personal information for
-              service delivery and customer satisfaction improvement.
-            </p>
-            <p className="text-gray-500 mt-1">
-              上記入力情報は、サービス提供及び顧客満足度向上のみに使用します。
-            </p>
-            <a
-              href="https://www.sammy.co.jp/english/policy/"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-blue-600 underline mt-1 inline-block text-sm"
-            >
-              Privacy Policy ↗
-            </a>
-          </div>
-        </label>
-        {errors.agreedToPrivacy && <p className="text-[10px] text-error mt-2">{errors.agreedToPrivacy}</p>}
       </div>
 
       <button

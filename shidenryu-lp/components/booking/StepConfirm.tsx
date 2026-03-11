@@ -8,6 +8,7 @@ interface Props {
   state: BookingState;
   onChangeStep: (step: 1 | 2 | 3 | 4 | 5) => void;
   onToggleTerms: (agreed: boolean) => void;
+  onTogglePrivacy: (agreed: boolean) => void;
   onSubmit: () => void;
 }
 
@@ -16,6 +17,7 @@ export default function StepConfirm({
   state,
   onChangeStep,
   onToggleTerms,
+  onTogglePrivacy,
   onSubmit,
 }: Props) {
   const dateDisplay = state.date
@@ -27,10 +29,17 @@ export default function StepConfirm({
       })
     : "";
   const timeDisplay = state.timeSlot?.replace("-", "–") ?? "";
-  const activityNames = state.activities
-    .map((id) => services.find((s) => s.id === id)?.name.split("(")[0].trim())
-    .filter(Boolean)
-    .join(" / ");
+  const isFamilyPlan = state.activities.some(
+    (id) => services.find((s) => s.id === id)?.category === "family"
+  );
+  const activityNames = isFamilyPlan
+    ? "Family Plan (Photo + Calligraphy + Art Board)"
+    : state.activities
+        .map((id) => services.find((s) => s.id === id)?.name.split("(")[0].trim())
+        .filter(Boolean)
+        .join(" / ");
+
+  const canSubmit = state.agreedToTerms && state.agreedToPrivacy && !state.isSubmitting;
 
   return (
     <div>
@@ -70,14 +79,34 @@ export default function StepConfirm({
         </p>
       </div>
 
-      {/* Privacy consent status */}
-      {state.agreedToPrivacy && (
-        <div className="bg-green-50 border border-green-200 rounded-lg p-2.5 mt-3">
-          <p className="text-[11px] text-green-700">
-            ✓ Personal information consent agreed
-          </p>
-        </div>
-      )}
+      {/* Personal information consent */}
+      <div className={`mt-4 p-4 rounded-lg border ${!state.agreedToPrivacy ? "border-gray-200 bg-gray-50" : "border-green-200 bg-green-50"}`}>
+        <label className="flex items-start gap-3 cursor-pointer">
+          <input
+            type="checkbox"
+            checked={state.agreedToPrivacy}
+            onChange={(e) => onTogglePrivacy(e.target.checked)}
+            className="mt-1 w-5 h-5 shrink-0 rounded border-gray-300 accent-red-700"
+          />
+          <div className="text-sm leading-relaxed">
+            <p className="text-gray-700">
+              I agree to the use of my personal information for
+              service delivery and customer satisfaction improvement.
+            </p>
+            <p className="text-gray-500 mt-1">
+              上記入力情報は、サービス提供及び顧客満足度向上のみに使用します。
+            </p>
+            <a
+              href="https://www.sammy.co.jp/english/policy/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-blue-600 underline mt-2 inline-block text-xs"
+            >
+              Privacy Policy (Sammy Corporation) ↗
+            </a>
+          </div>
+        </label>
+      </div>
 
       {/* Terms */}
       <label className="flex items-start gap-2 mt-4 cursor-pointer">
@@ -105,9 +134,9 @@ export default function StepConfirm({
       {/* Submit */}
       <button
         onClick={onSubmit}
-        disabled={!state.agreedToTerms || !state.agreedToPrivacy || state.isSubmitting}
+        disabled={!canSubmit}
         className={`w-full font-bold py-4 rounded-lg text-base mt-4 transition-opacity ${
-          state.agreedToTerms && state.agreedToPrivacy && !state.isSubmitting
+          canSubmit
             ? "bg-primary text-white hover:opacity-85"
             : "bg-gray-300 text-gray-500 cursor-not-allowed"
         }`}
@@ -128,7 +157,6 @@ export default function StepConfirm({
   );
 }
 
-/* ── small helper ── */
 function ConfirmRow({
   label,
   value,

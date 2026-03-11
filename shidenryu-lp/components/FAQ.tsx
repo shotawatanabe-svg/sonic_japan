@@ -17,7 +17,7 @@ const faqItems = [
   {
     question: "Can children participate?",
     answer:
-      "Children aged 6 and above can participate in most experiences. Calligraphy is available from age 4+. The Family Plan is specially designed for all ages with no participant limit — perfect for families with young children.",
+      "Children aged 6 and above can participate in most experiences. Calligraphy is available from age 4+. The Family Plan is available for all ages with no participant limit — perfect for families with young children.",
   },
   {
     question: "How is the booking confirmed?",

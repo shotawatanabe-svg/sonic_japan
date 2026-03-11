@@ -80,9 +80,11 @@ export default function ServiceDetailModal({ service, onClose }: Props) {
               )}
             </div>
 
-            <p className="text-foreground-muted text-sm leading-relaxed mb-4">
-              {service.description}
-            </p>
+            {service.description && service.description !== '(Description coming soon)' && (
+              <p className="text-foreground-muted text-sm leading-relaxed mb-4">
+                {service.description}
+              </p>
+            )}
 
             <div className="mb-4">
               <h3 className="text-xs font-bold text-foreground mb-2">
