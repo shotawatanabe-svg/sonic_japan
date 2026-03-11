@@ -126,6 +126,15 @@ export default function ConfirmSection({
         </p>
       </div>
 
+      {/* Privacy consent status */}
+      {state.agreedToPrivacy && (
+        <div className="bg-green-50 border border-green-200 rounded-lg p-2.5 mt-3">
+          <p className="text-[11px] text-green-700">
+            ✓ Personal information consent agreed
+          </p>
+        </div>
+      )}
+
       {/* Terms checkbox */}
       <label className="flex items-start gap-2 mt-4 cursor-pointer">
         <input
@@ -145,8 +154,9 @@ export default function ConfirmSection({
           </a>{" "}
           and{" "}
           <a
-            href="/privacy"
+            href="https://www.sammy.co.jp/english/policy/"
             target="_blank"
+            rel="noopener noreferrer"
             className="underline text-blue-600"
           >
             Privacy Policy
@@ -164,9 +174,9 @@ export default function ConfirmSection({
       {/* Submit button */}
       <button
         onClick={onSubmit}
-        disabled={!state.agreedToTerms || state.isSubmitting}
+        disabled={!state.agreedToTerms || !state.agreedToPrivacy || state.isSubmitting}
         className={`w-full font-bold py-4 rounded-lg text-base mt-4 transition-opacity ${
-          state.agreedToTerms && !state.isSubmitting
+          state.agreedToTerms && state.agreedToPrivacy && !state.isSubmitting
             ? "bg-primary text-white hover:opacity-85"
             : "bg-gray-300 text-gray-500 cursor-not-allowed"
         }`}

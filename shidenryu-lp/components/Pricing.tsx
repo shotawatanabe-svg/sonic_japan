@@ -29,9 +29,34 @@ export default function Pricing() {
           <p className="text-foreground-subtle text-xs mb-1">
             ¥10,000 per person for 4 guests
           </p>
-          <p className="text-foreground-muted text-sm mb-6">
+          <p className="text-foreground-muted text-sm mb-4">
             Up to 4 guests per session. Fixed price regardless of group size.
           </p>
+
+          {/* Key info */}
+          <div className="grid grid-cols-2 gap-2 mb-6">
+            <div className="bg-background-card border border-border rounded-lg p-3 text-center">
+              <p className="text-lg font-bold text-accent">70–90 min</p>
+              <p className="text-[10px] text-foreground-muted">Approx. duration</p>
+            </div>
+            <div className="bg-background-card border border-border rounded-lg p-3 text-center">
+              <p className="text-lg font-bold text-accent">Max 4</p>
+              <p className="text-[10px] text-foreground-muted">Participants</p>
+            </div>
+            <div className="bg-background-card border border-border rounded-lg p-3 text-center">
+              <p className="text-lg font-bold text-accent">Age 6+</p>
+              <p className="text-[10px] text-foreground-muted">Required age</p>
+            </div>
+            <div className="bg-background-card border border-border rounded-lg p-3 text-center">
+              <p className="text-lg font-bold text-accent">3 picks</p>
+              <p className="text-[10px] text-foreground-muted">Choose 3 experiences</p>
+            </div>
+          </div>
+
+          <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 mb-6 text-xs text-amber-800">
+            <strong>★ Family Plan (Special)</strong>: All ages welcome, no participant limit.
+            Counts as 3 experience slots.
+          </div>
 
           {/* Included */}
           <div className="mb-6">
@@ -43,7 +68,7 @@ export default function Pricing() {
                 "Professional instructor guidance",
                 "All equipment & costumes provided",
                 "Your choice of 3 experiences",
-                "Photo session & certificate of completion",
+                "Approx. 70–90 minutes total (incl. 10–20 min buffer)",
               ].map((item) => (
                 <li
                   key={item}

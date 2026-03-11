@@ -59,6 +59,27 @@ export default function ServiceDetailModal({ service, onClose }: Props) {
               </span>
             </div>
 
+            <div className="flex flex-wrap gap-2 mb-3 text-[11px]">
+              <span className="bg-background-alt border border-border rounded-full px-2.5 py-0.5 text-foreground-muted">
+                ⏱ ~{service.duration} min
+              </span>
+              {service.ageMin !== undefined && (
+                <span className="bg-background-alt border border-border rounded-full px-2.5 py-0.5 text-foreground-muted">
+                  {service.ageMin === 0 ? 'All ages' : `Age ${service.ageMin}+`}
+                </span>
+              )}
+              {service.category === 'family' && (
+                <span className="bg-amber-500/10 border border-amber-500/30 rounded-full px-2.5 py-0.5 text-amber-500 font-bold">
+                  = 3 Experience Slots
+                </span>
+              )}
+              {service.category === 'souvenir' && (
+                <span className="bg-pink-400/10 border border-pink-400/30 rounded-full px-2.5 py-0.5 text-pink-400 font-bold">
+                  Souvenir (max 1)
+                </span>
+              )}
+            </div>
+
             <p className="text-foreground-muted text-sm leading-relaxed mb-4">
               {service.description}
             </p>

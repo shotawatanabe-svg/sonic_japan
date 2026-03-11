@@ -14,6 +14,7 @@ export type BookingState = {
   guestSizeEntries: GuestSizeEntry[];
   roomNumber: string;
   specialRequests: string;
+  agreedToPrivacy: boolean;
   agreedToTerms: boolean;
   isSubmitting: boolean;
   error: string | null;
@@ -50,6 +51,7 @@ export const INITIAL_BOOKING_STATE: BookingState = {
   guestSizeEntries: [],
   roomNumber: "",
   specialRequests: "",
+  agreedToPrivacy: false,
   agreedToTerms: false,
   isSubmitting: false,
   error: null,

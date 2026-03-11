@@ -70,6 +70,15 @@ export default function StepConfirm({
         </p>
       </div>
 
+      {/* Privacy consent status */}
+      {state.agreedToPrivacy && (
+        <div className="bg-green-50 border border-green-200 rounded-lg p-2.5 mt-3">
+          <p className="text-[11px] text-green-700">
+            ✓ Personal information consent agreed
+          </p>
+        </div>
+      )}
+
       {/* Terms */}
       <label className="flex items-start gap-2 mt-4 cursor-pointer">
         <input
@@ -82,7 +91,7 @@ export default function StepConfirm({
           I agree to the{" "}
           <a href="/terms" target="_blank" className="underline text-blue-600">Terms of Service</a>
           {" "}and{" "}
-          <a href="/privacy" target="_blank" className="underline text-blue-600">Privacy Policy</a>
+          <a href="https://www.sammy.co.jp/english/policy/" target="_blank" rel="noopener noreferrer" className="underline text-blue-600">Privacy Policy</a>
         </span>
       </label>
 
@@ -96,9 +105,9 @@ export default function StepConfirm({
       {/* Submit */}
       <button
         onClick={onSubmit}
-        disabled={!state.agreedToTerms || state.isSubmitting}
+        disabled={!state.agreedToTerms || !state.agreedToPrivacy || state.isSubmitting}
         className={`w-full font-bold py-4 rounded-lg text-base mt-4 transition-opacity ${
-          state.agreedToTerms && !state.isSubmitting
+          state.agreedToTerms && state.agreedToPrivacy && !state.isSubmitting
             ? "bg-primary text-white hover:opacity-85"
             : "bg-gray-300 text-gray-500 cursor-not-allowed"
         }`}

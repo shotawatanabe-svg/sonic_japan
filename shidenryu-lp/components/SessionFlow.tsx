@@ -10,30 +10,30 @@ const steps = [
       "Instructor arrives at your room. Change into costume, safety briefing, and etiquette introduction.",
   },
   {
-    time: "0:15",
+    time: "0:10",
     title: "Experience ① (~20 min)",
     description:
       "Your first chosen activity. The instructor guides you step by step.",
   },
   {
-    time: "0:35",
+    time: "0:30",
     title: "Experience ② (~20 min)",
     description: "Second activity. From basics to practice.",
   },
   {
-    time: "0:55",
+    time: "0:50",
     title: "Experience ③ (~20 min)",
     description:
       "Third activity. Apply everything you've learned so far.",
   },
   {
-    time: "1:15",
-    title: "Photo Session & Wrap-up",
+    time: "1:10",
+    title: "Wrap-up",
     description:
-      "Strike a pose for memorable photos. Receive your certificate of completion.",
+      "Session concludes. Total time approx. 70–90 minutes including buffer.",
   },
   {
-    time: "1:30",
+    time: "1:10–1:30",
     title: "Session Complete",
     description: "Thank you for your experience!",
     isLast: true,
@@ -54,7 +54,7 @@ export default function SessionFlow() {
             Session Flow
           </span>
           <h2 className="font-heading text-2xl font-bold mb-6 text-foreground tracking-wide">
-            Your 90-Minute Journey
+            Your 70–90 Minute Journey
           </h2>
         </motion.div>
 

@@ -16,13 +16,14 @@ export default function Footer() {
             Terms of Service
           </Link>
           <span>|</span>
-          <Link
-            href="/privacy"
+          <a
+            href="https://www.sammy.co.jp/english/policy/"
             target="_blank"
+            rel="noopener noreferrer"
             className="hover:text-accent transition-colors"
           >
             Privacy Policy
-          </Link>
+          </a>
           <span>|</span>
           <a href="#" className="hover:text-accent transition-colors">
             Legal Notice

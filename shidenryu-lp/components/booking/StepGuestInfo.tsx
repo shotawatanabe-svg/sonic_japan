@@ -38,6 +38,7 @@ interface GuestData {
   guestSizeEntries: GuestSizeEntry[];
   roomNumber: string;
   specialRequests: string;
+  agreedToPrivacy: boolean;
 }
 
 interface Props {
@@ -72,6 +73,7 @@ export default function StepGuestInfo({
       newErrors.guestSizes = "Please select type and size for all guests";
     }
     if (!data.roomNumber.trim()) newErrors.roomNumber = "Room number is required";
+    if (!data.agreedToPrivacy) newErrors.agreedToPrivacy = "Please agree to the use of personal information";
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -256,6 +258,34 @@ export default function StepGuestInfo({
           rows={3}
           className="w-full px-3 py-2.5 border border-border rounded-lg text-sm bg-background-alt resize-none focus:outline-none focus:ring-2 focus:ring-primary/30"
         />
+      </div>
+
+      {/* Personal information consent */}
+      <div className={`mb-4 border rounded-lg p-3 ${errors.agreedToPrivacy ? "border-error bg-red-50" : "border-border bg-background-alt"}`}>
+        <p className="text-[11px] text-foreground-muted mb-2">
+          上記入力情報は、サービス提供及び顧客満足度向上のみに使用します。
+        </p>
+        <p className="text-[11px] text-foreground-muted mb-2">
+          The information entered above will be used solely for service delivery and improving customer satisfaction.
+        </p>
+        <label className="flex items-start gap-2 cursor-pointer">
+          <input
+            type="checkbox"
+            checked={data.agreedToPrivacy}
+            onChange={(e) => {
+              onChange({ agreedToPrivacy: e.target.checked });
+              clearError("agreedToPrivacy");
+            }}
+            className="mt-0.5 shrink-0 accent-primary"
+          />
+          <span className="text-[11px] font-bold text-foreground">
+            I agree to the use of my personal information{" "}
+            <a href="https://www.sammy.co.jp/english/policy/" target="_blank" rel="noopener noreferrer" className="underline text-blue-600">
+              (Privacy Policy)
+            </a>
+          </span>
+        </label>
+        {errors.agreedToPrivacy && <p className="text-[10px] text-error mt-1">{errors.agreedToPrivacy}</p>}
       </div>
 
       <button

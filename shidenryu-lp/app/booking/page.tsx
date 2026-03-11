@@ -115,19 +115,27 @@ function BookingContent() {
     setTimeout(() => goToStep(3, 1), 300);
   };
 
-  // Step 3: Toggle activity
+  // Step 3: Toggle activity (slot-aware)
   const handleToggleActivity = (id: string) => {
     setState((prev) => {
       const exists = prev.activities.includes(id);
       if (exists) return { ...prev, activities: prev.activities.filter((a) => a !== id) };
-      if (prev.activities.length >= 3) return prev;
+
+      const service = services.find((s) => s.id === id);
+      const needed = service?.slotsRequired ?? 1;
+      const currentSlots = prev.activities.reduce((sum, aid) => {
+        const s = services.find((sv) => sv.id === aid);
+        return sum + (s?.slotsRequired ?? 1);
+      }, 0);
+      if (currentSlots + needed > 3) return prev;
+
       return { ...prev, activities: [...prev.activities, id] };
     });
   };
 
   // Step 4: Guest data update
   const handleGuestChange = (
-    data: Partial<Pick<BookingState, "nickname" | "email" | "numberOfGuests" | "guestSizeEntries" | "roomNumber" | "specialRequests">>
+    data: Partial<Pick<BookingState, "nickname" | "email" | "numberOfGuests" | "guestSizeEntries" | "roomNumber" | "specialRequests" | "agreedToPrivacy">>
   ) => {
     setState((prev) => ({ ...prev, ...data }));
   };
@@ -144,7 +152,7 @@ function BookingContent() {
 
   // Step 5: Submit booking via Googleフォーム隠し送信
   const handleSubmit = async () => {
-    if (!state.agreedToTerms || state.isSubmitting) return;
+    if (!state.agreedToTerms || !state.agreedToPrivacy || state.isSubmitting) return;
 
     setState((prev) => ({ ...prev, isSubmitting: true, error: null }));
 
@@ -277,9 +285,17 @@ function BookingContent() {
                 />
                 <button
                   onClick={() => goToStep(4, 1)}
-                  disabled={state.activities.length !== 3}
+                  disabled={
+                    state.activities.reduce((sum, aid) => {
+                      const s = services.find((sv) => sv.id === aid);
+                      return sum + (s?.slotsRequired ?? 1);
+                    }, 0) !== 3
+                  }
                   className={`w-full font-bold py-3.5 rounded-lg text-sm mt-4 transition-opacity ${
-                    state.activities.length === 3
+                    state.activities.reduce((sum, aid) => {
+                      const s = services.find((sv) => sv.id === aid);
+                      return sum + (s?.slotsRequired ?? 1);
+                    }, 0) === 3
                       ? "bg-primary text-white hover:opacity-85"
                       : "bg-gray-300 text-gray-500 cursor-not-allowed"
                   }`}
@@ -305,6 +321,7 @@ function BookingContent() {
                     guestSizeEntries: state.guestSizeEntries,
                     roomNumber: state.roomNumber,
                     specialRequests: state.specialRequests,
+                    agreedToPrivacy: state.agreedToPrivacy,
                   }}
                   onChange={handleGuestChange}
                   onNext={() => goToStep(5, 1)}
