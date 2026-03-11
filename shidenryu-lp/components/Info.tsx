@@ -10,8 +10,8 @@ const infoCards = [
   },
   {
     icon: "👥",
-    title: "1–4 Guests per Session",
-    description: "Duration: approx. 90 minutes",
+    title: "Up to 4 Guests",
+    description: "Duration: approx. 70–90 minutes",
   },
   {
     icon: "🏨",

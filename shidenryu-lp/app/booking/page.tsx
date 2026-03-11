@@ -115,22 +115,9 @@ function BookingContent() {
     setTimeout(() => goToStep(3, 1), 300);
   };
 
-  // Step 3: Toggle activity (slot-aware)
-  const handleToggleActivity = (id: string) => {
-    setState((prev) => {
-      const exists = prev.activities.includes(id);
-      if (exists) return { ...prev, activities: prev.activities.filter((a) => a !== id) };
-
-      const service = services.find((s) => s.id === id);
-      const needed = service?.slotsRequired ?? 1;
-      const currentSlots = prev.activities.reduce((sum, aid) => {
-        const s = services.find((sv) => sv.id === aid);
-        return sum + (s?.slotsRequired ?? 1);
-      }, 0);
-      if (currentSlots + needed > 3) return prev;
-
-      return { ...prev, activities: [...prev.activities, id] };
-    });
+  // Step 3: Set activities (managed by StepActivities)
+  const handleSetActivities = (newActivities: string[]) => {
+    setState((prev) => ({ ...prev, activities: newActivities }));
   };
 
   // Step 4: Guest data update
@@ -281,21 +268,15 @@ function BookingContent() {
                 <StepActivities
                   services={services}
                   selected={state.activities}
-                  onToggle={handleToggleActivity}
+                  onSelect={handleSetActivities}
                 />
                 <button
                   onClick={() => goToStep(4, 1)}
                   disabled={
-                    state.activities.reduce((sum, aid) => {
-                      const s = services.find((sv) => sv.id === aid);
-                      return sum + (s?.slotsRequired ?? 1);
-                    }, 0) !== 3
+                    !(state.activities.some((id) => services.find((s) => s.id === id)?.category === 'family') || state.activities.length === 3)
                   }
                   className={`w-full font-bold py-3.5 rounded-lg text-sm mt-4 transition-opacity ${
-                    state.activities.reduce((sum, aid) => {
-                      const s = services.find((sv) => sv.id === aid);
-                      return sum + (s?.slotsRequired ?? 1);
-                    }, 0) === 3
+                    state.activities.some((id) => services.find((s) => s.id === id)?.category === 'family') || state.activities.length === 3
                       ? "bg-primary text-white hover:opacity-85"
                       : "bg-gray-300 text-gray-500 cursor-not-allowed"
                   }`}

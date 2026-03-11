@@ -61,11 +61,11 @@ export default function ServiceDetailModal({ service, onClose }: Props) {
 
             <div className="flex flex-wrap gap-2 mb-3 text-[11px]">
               <span className="bg-background-alt border border-border rounded-full px-2.5 py-0.5 text-foreground-muted">
-                ⏱ ~{service.duration} min
+                ⏱ {service.duration}
               </span>
-              {service.ageMin !== undefined && (
+              {service.age && (
                 <span className="bg-background-alt border border-border rounded-full px-2.5 py-0.5 text-foreground-muted">
-                  {service.ageMin === 0 ? 'All ages' : `Age ${service.ageMin}+`}
+                  Age: {service.age}
                 </span>
               )}
               {service.category === 'family' && (

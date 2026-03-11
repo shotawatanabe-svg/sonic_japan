@@ -261,14 +261,8 @@ export default function StepGuestInfo({
       </div>
 
       {/* Personal information consent */}
-      <div className={`mb-4 border rounded-lg p-3 ${errors.agreedToPrivacy ? "border-error bg-red-50" : "border-border bg-background-alt"}`}>
-        <p className="text-[11px] text-foreground-muted mb-2">
-          上記入力情報は、サービス提供及び顧客満足度向上のみに使用します。
-        </p>
-        <p className="text-[11px] text-foreground-muted mb-2">
-          The information entered above will be used solely for service delivery and improving customer satisfaction.
-        </p>
-        <label className="flex items-start gap-2 cursor-pointer">
+      <div className={`mb-4 p-4 rounded-lg border ${errors.agreedToPrivacy ? "border-error bg-red-50" : "border-border bg-gray-50"}`}>
+        <label className="flex items-start gap-3 cursor-pointer">
           <input
             type="checkbox"
             checked={data.agreedToPrivacy}
@@ -276,16 +270,27 @@ export default function StepGuestInfo({
               onChange({ agreedToPrivacy: e.target.checked });
               clearError("agreedToPrivacy");
             }}
-            className="mt-0.5 shrink-0 accent-primary"
+            className="mt-1 w-5 h-5 shrink-0 rounded border-gray-300 accent-primary"
           />
-          <span className="text-[11px] font-bold text-foreground">
-            I agree to the use of my personal information{" "}
-            <a href="https://www.sammy.co.jp/english/policy/" target="_blank" rel="noopener noreferrer" className="underline text-blue-600">
-              (Privacy Policy)
+          <div className="text-sm">
+            <p className="text-gray-700">
+              I agree to the use of my personal information for
+              service delivery and customer satisfaction improvement.
+            </p>
+            <p className="text-gray-500 mt-1">
+              上記入力情報は、サービス提供及び顧客満足度向上のみに使用します。
+            </p>
+            <a
+              href="https://www.sammy.co.jp/english/policy/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-blue-600 underline mt-1 inline-block text-sm"
+            >
+              Privacy Policy ↗
             </a>
-          </span>
+          </div>
         </label>
-        {errors.agreedToPrivacy && <p className="text-[10px] text-error mt-1">{errors.agreedToPrivacy}</p>}
+        {errors.agreedToPrivacy && <p className="text-[10px] text-error mt-2">{errors.agreedToPrivacy}</p>}
       </div>
 
       <button

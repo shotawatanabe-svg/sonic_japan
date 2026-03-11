@@ -17,7 +17,7 @@ const faqItems = [
   {
     question: "Can children participate?",
     answer:
-      "Yes! Children aged 6 and above can participate with a guardian present.",
+      "Children aged 6 and above can participate in most experiences. Calligraphy is available from age 4+. The Family Plan is specially designed for all ages with no participant limit — perfect for families with young children.",
   },
   {
     question: "How is the booking confirmed?",
